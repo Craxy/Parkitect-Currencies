@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.25802.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{67EFFB88-B247-48CD-BF70-16A38287E8F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Currencies", "src\Currencies\Currencies.csproj", "{129AC089-4E59-45CC-B1ED-F36375301A15}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{6FD8B1F6-5685-4005-A3C3-3FE878F00428}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		mod.json = mod.json
+		README.md = README.md
+		RELEASE_NOTES.md = RELEASE_NOTES.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{129AC089-4E59-45CC-B1ED-F36375301A15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{129AC089-4E59-45CC-B1ED-F36375301A15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{129AC089-4E59-45CC-B1ED-F36375301A15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{129AC089-4E59-45CC-B1ED-F36375301A15}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{129AC089-4E59-45CC-B1ED-F36375301A15} = {67EFFB88-B247-48CD-BF70-16A38287E8F0}
+	EndGlobalSection
+EndGlobal
