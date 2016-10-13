@@ -32,9 +32,6 @@ namespace Craxy.Parkitect.Currencies
         {
           //todo: load from file
           _settings = new Settings();
-          _settings.Symbol.Value = "€";
-          _settings.NegativePattern.Value = 8;
-          _settings.PositivePattern.Value = 3;
         }
         return _settings;
       }
@@ -66,17 +63,18 @@ namespace Craxy.Parkitect.Currencies
       Debug.Log("[Currencies] disabled");
     }
 
+    private SettingsWindow _settingsWindow = null;
     public void onSettingsOpened()
     {
-      //todo: implement
+      _settingsWindow = new SettingsWindow(Settings);
     }
     public void onSettingsClosed()
     {
-      //todo: implement
+      _settingsWindow = null;
     }
     public void onDrawSettingsUI()
     {
-      //todo: implement
+      _settingsWindow.Draw();
     }
   }
 }

@@ -44,9 +44,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MoneyLabeler.cs" />
+    <Compile Include="SettingsWindow.cs" />
+    <Compile Include="Utils\CultureInfoHelper.cs" />
+    <Compile Include="Utils\CultureInfoHelper.generated.cs" />
     <Compile Include="Utils\UIHelper.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Mod.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Utils\CreateCultureInfos.fsx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
