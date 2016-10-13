@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Linq;
 using MiniJSON;
 
 namespace Craxy.Parkitect.Currencies
@@ -255,7 +256,7 @@ namespace Craxy.Parkitect.Currencies
       {
         if (_negativePattern == null)
         {
-          _negativePattern = new Entry<int>("PositivePattern",
+          _negativePattern = new Entry<int>("NegativePattern",
                                       () => NumberFormat.CurrencyNegativePattern,
                                       (value) => NumberFormat.CurrencyNegativePattern = value,
                                       Validate(Between(0, 15), "Positive pattern must be between 0 and 15."),
@@ -279,15 +280,22 @@ namespace Craxy.Parkitect.Currencies
 
       return Json.Serialize(dict);
     }
-    public void LoadFromJson(string json)
+    public string[] LoadFromJson(string json)
     {
       var dict = (Dictionary<string, object>)Json.Deserialize(json);
 
-      Symbol.LoadFromDictionary(dict);
-      DecimalSeparator.LoadFromDictionary(dict);
-      GroupSeparator.LoadFromDictionary(dict);
-      PositivePattern.LoadFromDictionary(dict);
-      NegativePattern.LoadFromDictionary(dict);
+      return new[]
+        {
+          Symbol.LoadFromDictionary(dict),
+          DecimalSeparator.LoadFromDictionary(dict),
+          GroupSeparator.LoadFromDictionary(dict),
+          PositivePattern.LoadFromDictionary(dict),
+          NegativePattern.LoadFromDictionary(dict),
+        }
+        .Where(vr => vr.IsError())
+        .Select(vr  => vr.Message)
+        .ToArray()
+      ;
     }
     #endregion
   }
