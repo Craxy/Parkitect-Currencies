@@ -218,7 +218,7 @@ namespace Craxy.Parkitect.Currencies
         InitalizePresets();
       }
 
-      GUILayout.Label("Load Presets:");
+      GUILayout.Label("Presets:");
 
       foreach (var preset in _presets)
       {
