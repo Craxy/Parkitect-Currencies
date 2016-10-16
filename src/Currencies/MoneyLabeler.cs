@@ -2,6 +2,7 @@
 using System.Reflection;
 using Parkitect.UI;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Craxy.Parkitect.Currencies
 {
@@ -11,8 +12,8 @@ namespace Craxy.Parkitect.Currencies
 
     private void OnDisable()
     {
-      _count = 0;
       _lastForemostWindow = null;
+      _windows = null;
     }
 
     private void Update()
@@ -21,28 +22,37 @@ namespace Craxy.Parkitect.Currencies
     }
 
 
-    //reflection is expensive -> limit reflection
-    // 3 is hardly noticable but reduces the reflection calls
-    private int _updateEvery = 3;
-    private int _count = 0;
+    private IList<UIWindowFrame> _windows = null;
     private UIWindowFrame _lastForemostWindow = null;
     private void TrackNewWindow()
     {
-      // 40 to 70 ticks per loop
+      // 3 to 4 ticks per loop when there's no change
       // "A single tick represents one hundred nanoseconds or one ten-millionth of a second. There are 10,000 ticks in a millisecond, or 10 million ticks in a second."
       // https://msdn.microsoft.com/en-us/library/system.datetime.ticks(v=vs.110).aspx
 
-      if (_count++ >= _updateEvery)
+
+      // a previous check if the currency symbol was changed is quite expensive:
+      // it adds 4 to 8 ticks (but prevents checks for new windows if symbol is default (which are around 100 to 300 ticks))
+      //if (Settings.NumberFormat.CurrencySymbol != Settings.DefaultNumberFormat.CurrencySymbol)
+
+      // the window on top is the last item in UIWindowsController.uiWindows
+      if (_windows == null)
       {
-        _count = 0;
+        var field = typeof(UIWindowsController).GetField("uiWindows", BindingFlags.Instance | BindingFlags.NonPublic);
+        _windows = (IList<UIWindowFrame>)field.GetValue(UIWindowsController.Instance);
+      }
 
-        var window = GetForemostWindow();
-        if (!ReferenceEquals(window, _lastForemostWindow))
-        {
-          ChangeMoneySymbol(window);
+      UIWindowFrame window = null;
+      if (_windows.Count > 0)
+      {
+        window = _windows[_windows.Count - 1];
+      }
 
-          _lastForemostWindow = window;
-        }
+      if (!ReferenceEquals(window, _lastForemostWindow))
+      {
+        ChangeMoneySymbol(window);
+
+        _lastForemostWindow = window;
       }
     }
 
@@ -61,18 +71,6 @@ namespace Craxy.Parkitect.Currencies
           }
         }
       }
-    }
-
-
-    private FieldInfo _foremostWindow;
-    private UIWindowFrame GetForemostWindow()
-    {
-      if (_foremostWindow == null)
-      {
-        _foremostWindow = typeof(UIWindowsController).GetField("foremostWindow", BindingFlags.Instance | BindingFlags.NonPublic);
-      }
-
-      return (UIWindowFrame)_foremostWindow.GetValue(UIWindowsController.Instance);
     }
   }
 }
