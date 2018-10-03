@@ -1,61 +1,291 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{129AC089-4E59-45CC-B1ED-F36375301A15}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net45</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <RootNamespace>Craxy.Parkitect.Currencies</RootNamespace>
-    <AssemblyName>Currencies</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+
+  <PropertyGroup>
+    <!-- Used as identifier in parkitect (-> IMod.Identifier) -->
+    <Identifier>Craxy@Currencies</Identifier>
+    <!-- Used as name in parkitect(-> IMod.Name) and as AssemblyTitle and AssemblyProduct-->
+    <Name>Currencies</Name>
+    <!-- Used as description in parkitect (-> IMod.Description) and as AssemblyDescription -->
+    <Description>Change the currency in Parkitect.</Description>
+
+    <!-- dll name -->
+    <AssemblyName>$(Identifier)</AssemblyName>
+    <!-- Output folder name in $(ModDir) -->
+    <FolderName>$(AssemblyName)</FolderName>
+
+    <!-- If true: execute Parkitect.exe after build. For single build: dotnet build /p:StartParkitect=true -->
+    <StartParkitect>false</StartParkitect>
+    <!-- Starts Parkitect via steam. $(SteamExe) must be specified! -->
+    <!-- Another advantage of starting via steam: otherwise msbuild waits for Parkitect to close -->
+    <UseSteam>false</UseSteam>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+
+  <PropertyGroup>
+    <!-- Different on each system -->
+    <ParkitectPath>E:\Downloads\games\Humble Bundle\games\Parkitect\Parkitect_Beta_11_64bit</ParkitectPath>
+    <ParkitectUserPath>E:\Documents\Parkitect</ParkitectUserPath>
+    <SteamExe>D:\Games\Steam\Steam.exe</SteamExe>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <ParkitectSteamId>453090</ParkitectSteamId>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\game\Assembly-CSharp.dll</HintPath>
+    <!--
+      In Powershell (in $(ParkitectPath)/Parkitect_Data/Managed folder):
+        $format = "<Reference Include=`"{0}`">`n  <HintPath>`$(ParkitectPath)/Parkitect_Data\Managed\{1}</HintPath>`n</Reference>"
+        ls *.dll | % { [String]::Format($format, $_.BaseName, $_.Name) }
+      + a bit manual cleanup
+          (but still more references than necessary)
+    -->
+    <Reference Include="DOTween">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\DOTween.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <Reference Include="DOTween43">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\DOTween43.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween46">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\DOTween46.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween50">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\DOTween50.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Posix">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\Mono.Posix.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Security">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Parkitect">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\Parkitect.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="ThirdParty.">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\ThirdParty..dll</HintPath>
+    </Reference>
+    <Reference Include="ThirdParty">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\ThirdParty.dll</HintPath>
+    </Reference>
+    <Reference Include="ThirdParty.DynamicDecals">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\ThirdParty.DynamicDecals.dll</HintPath>
+    </Reference>
+    <Reference Include="ThirdParty.GraphMaker">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\ThirdParty.GraphMaker.dll</HintPath>
+    </Reference>
+    <Reference Include="ThirdParty.Lutify">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\ThirdParty.Lutify.dll</HintPath>
+    </Reference>
+    <Reference Include="ThirdParty.ScreenSpaceCloudShadow">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\ThirdParty.ScreenSpaceCloudShadow.dll</HintPath>
+    </Reference>
+    <Reference Include="ThirdParty.TiltShift">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\ThirdParty.TiltShift.dll</HintPath>
+    </Reference>
+    <Reference Include="ThirdParty.UnityUiExtensions">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\ThirdParty.UnityUiExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Postprocessing.Runtime">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\Unity.Postprocessing.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AccessibilityModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.AccessibilityModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AIModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.AIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Analytics">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.Analytics.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ARModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.ARModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClothModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.ClothModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterInputModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.ClusterInputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterRendererModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.ClusterRendererModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CrashLog">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.CrashLog.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CrashReportingModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.CrashReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DirectorModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.DirectorModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\game\UnityEngine.dll</HintPath>
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GameCenterModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.GameCenterModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GridModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.GridModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Networking">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticlesLegacyModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.ParticlesLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PerformanceReportingModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.PerformanceReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ScreenCaptureModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SharedInternalsModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.SharedInternalsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpatialTracking">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteMaskModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.SpriteMaskModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteShapeModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.SpriteShapeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.StandardEvents">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.StandardEvents.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.StyleSheetsModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.StyleSheetsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainPhysicsModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TilemapModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Timeline">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\game\UnityEngine.UI.dll</HintPath>
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UIElementsModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UNETModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.UNETModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityAnalyticsModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityConnectModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.UnityConnectModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VehiclesModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.VehiclesModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VRModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.VRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.WebModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.WebModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.WindModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.WindModule.dll</HintPath>
+    </Reference>
+
+
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="MoneyLabeler.cs" />
-    <Compile Include="SettingsWindow.cs" />
-    <Compile Include="Utils\CultureInfoHelper.cs" />
-    <Compile Include="Utils\CultureInfoHelper.generated.cs" />
-    <Compile Include="Utils\UIHelper.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Mod.cs" />
+    <!-- Source: https://stuartlang.uk/adding-assemblymetadataattribute-using-new-sdk-project-with-msbuild/ -->
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>Identifier</_Parameter1>
+      <_Parameter2>$(Identifier)</_Parameter2>
+    </AssemblyAttribute>
   </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Utils\CreateCultureInfos.fsx" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <ModDir>$(ParkitectUserPath)\Mods\$(FolderName)</ModDir>
+
+    <AssemblyTitle>$(Name)</AssemblyTitle>
+    <Product>$(Name)</Product>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <RemoveDir Directories="$(ModDir)" />
+    <MakeDir Directories="$(ModDir)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ModDir)/$(TargetFileName)" />
+  </Target>
+  <Target Name="StartParkitect" AfterTargets="PostBuild" Condition="'$(StartParkitect)' == 'true'">
+    <Exec Condition="'$(UseSteam)' != 'true'" Command='"$(ParkitectPath)/Parkitect"' />
+    <Exec Condition="'$(UseSteam)' == 'true'" Command='"$(SteamExe)" -applaunch $(ParkitectSteamId)' />
+  </Target>
 </Project>
