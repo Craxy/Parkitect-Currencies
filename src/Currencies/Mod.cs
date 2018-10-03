@@ -30,8 +30,6 @@ namespace Craxy.Parkitect.Currencies
       description = GetAssemblyAttribute<AssemblyDescriptionAttribute>().Description;
     }
 
-    public String Path { get; set; }
-
     private GameObject _go;
     public void onEnabled()
     {
@@ -75,7 +73,7 @@ namespace Craxy.Parkitect.Currencies
     {
       get
       {
-        return System.IO.Path.Combine(Path, FileName);
+        return FilePaths.getFolderPath(FileName);
       }
     }
 
