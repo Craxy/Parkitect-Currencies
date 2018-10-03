@@ -1,27 +1,35 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace Craxy.Parkitect.Currencies
 {
   public class Mod : IMod, IModSettings
   {
-    public String Name
+    public string Name => name;
+    public string Description => description;
+    public string Identifier => identifier;
+
+    private static string name, description, identifier;
+
+    static Mod()
     {
-      get
-      {
-        return "Currencies";
-      }
-    }
-    public String Description
-    {
-      get
-      {
-        return "Change the currency symbol.";
-      }
+      var assembly = Assembly.GetExecutingAssembly();
+
+      var meta =
+          assembly.GetCustomAttributes(typeof(AssemblyMetadataAttribute), false)
+          .Cast<AssemblyMetadataAttribute>()
+          .Single(a => a.Key == "Identifier");
+      identifier = meta.Value;
+
+      T GetAssemblyAttribute<T>() where T : System.Attribute => (T)assembly.GetCustomAttribute(typeof(T));
+
+      name = GetAssemblyAttribute<AssemblyTitleAttribute>().Title;
+      description = GetAssemblyAttribute<AssemblyDescriptionAttribute>().Description;
     }
 
-    public String Identifier { get; set; }
     public String Path { get; set; }
 
     private GameObject _go;
@@ -30,7 +38,7 @@ namespace Craxy.Parkitect.Currencies
       // change currency format to own one
       GameController.currencyFormat = Settings.NumberFormat;
 
-      // money labeler: 
+      // money labeler:
       //   tracks windows for input fields with currencies
       //   unfortunately UIInputFields don't use the currency from GameControl.currencyFormat
       _go = new GameObject();
@@ -75,7 +83,7 @@ namespace Craxy.Parkitect.Currencies
     {
       var settings = new Settings();
 
-      if(File.Exists(FilePath))
+      if (File.Exists(FilePath))
       {
         Log(String.Format("Loading settings from \"{0}\"", FilePath));
         //try to load
@@ -84,7 +92,7 @@ namespace Craxy.Parkitect.Currencies
           var json = File.ReadAllText(FilePath);
           var errors = settings.LoadFromJson(json);
 
-          if(errors.Length > 0)
+          if (errors.Length > 0)
           {
             Log("Error(s) loading settings: " + String.Join("; ", errors));
           }
@@ -139,7 +147,7 @@ namespace Craxy.Parkitect.Currencies
 
     public void Log(string msg)
     {
-      Debug.Log("["+Name+"] " + msg);
+      Debug.Log("[" + Name + "] " + msg);
     }
   }
 }

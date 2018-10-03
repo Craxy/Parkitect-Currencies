@@ -12,7 +12,7 @@
     <!-- Used as name in parkitect(-> IMod.Name) and as AssemblyTitle and AssemblyProduct-->
     <Name>Currencies</Name>
     <!-- Used as description in parkitect (-> IMod.Description) and as AssemblyDescription -->
-    <Description>Change the currency in Parkitect.</Description>
+    <Description>Change the currency symbol.</Description>
 
     <!-- dll name -->
     <AssemblyName>$(Identifier)</AssemblyName>
