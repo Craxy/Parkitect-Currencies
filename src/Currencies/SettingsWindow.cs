@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Craxy.Parkitect.Currencies.Utils;
 using UnityEngine;
 using System.Globalization;

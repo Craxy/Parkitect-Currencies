@@ -78,17 +78,17 @@ namespace Craxy.Parkitect.Currencies
       }
       set
       {
-        if(Object.Equals(value, Value))
+        if (Object.Equals(value, Value))
         {
           return;
         }
 
         var validation = Validate(value);
-        if(validation.IsError())
+        if (validation.IsError())
         {
           throw new ArgumentException(validation.Message, "value");
         }
-      _setValue(value);
+        _setValue(value);
       }
     }
 
@@ -99,7 +99,7 @@ namespace Craxy.Parkitect.Currencies
     public ValidationResult LoadFromDictionary(Dictionary<string, Object> dict)
     {
       object value;
-      if(!dict.TryGetValue(Name, out value))
+      if (!dict.TryGetValue(Name, out value))
       {
         return ValidationResult.Error(String.Format("There's no data for '{0}'.", Name));
       }
@@ -110,7 +110,7 @@ namespace Craxy.Parkitect.Currencies
       // https://gist.github.com/darktable/1411710
 
       // null is always wrong
-      if(value == null)
+      if (value == null)
       {
         return ValidationResult.Error(String.Format("Data for '{0}' is null.", Name));
       }
@@ -185,7 +185,7 @@ namespace Craxy.Parkitect.Currencies
                                       (value) => NumberFormat.CurrencySymbol = value,
                                       Validate(LengthBetween(0, 3), "Symbol must be between 0 and 3 characters."),
                                       () => DefaultNumberFormat.CurrencySymbol
-                                     );
+                                    );
         }
         return _symbol;
       }
@@ -204,7 +204,7 @@ namespace Craxy.Parkitect.Currencies
                                       (value) => NumberFormat.CurrencyDecimalSeparator = value,
                                       Validate(LengthBetween(0, 3), "Decimal separator must be between 1 and 3 characters."),
                                       () => DefaultNumberFormat.CurrencyDecimalSeparator
-                                     );
+                                    );
         }
         return _decimalSeparator;
       }
@@ -223,7 +223,7 @@ namespace Craxy.Parkitect.Currencies
                                       (value) => NumberFormat.CurrencyGroupSeparator = value,
                                       Validate(LengthBetween(0, 3), "Group separator must be between 0 and 3 characters."),
                                       () => DefaultNumberFormat.CurrencyGroupSeparator
-                                     );
+                                    );
         }
         return _groupSeparator;
       }
@@ -242,7 +242,7 @@ namespace Craxy.Parkitect.Currencies
                                       (value) => NumberFormat.CurrencyPositivePattern = value,
                                       Validate(Between(0, 3), "Positive pattern must be between 0 and 3."),
                                       () => DefaultNumberFormat.CurrencyPositivePattern
-                                     );
+                                    );
         }
         return _positivePattern;
       }
@@ -261,7 +261,7 @@ namespace Craxy.Parkitect.Currencies
                                       (value) => NumberFormat.CurrencyNegativePattern = value,
                                       Validate(Between(0, 15), "Positive pattern must be between 0 and 15."),
                                       () => DefaultNumberFormat.CurrencyNegativePattern
-                                     );
+                                    );
         }
         return _negativePattern;
       }
@@ -293,7 +293,7 @@ namespace Craxy.Parkitect.Currencies
           NegativePattern.LoadFromDictionary(dict),
         }
         .Where(vr => vr.IsError())
-        .Select(vr  => vr.Message)
+        .Select(vr => vr.Message)
         .ToArray()
       ;
     }

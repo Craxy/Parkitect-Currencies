@@ -1,4 +1,4 @@
-﻿open System
+open System
 open System.Globalization
 open System.Reflection
 open System.IO
@@ -12,7 +12,7 @@ let indents i strs = strs |> List.map (indent i)
 
 let valueToString (value: obj) =
   match value with
-  | :? (int array) as arr -> 
+  | :? (int array) as arr ->
       sprintf "new int[] { %s }" (arr |> Seq.map string |> String.concat ", ")
   | :? string as str ->
       str |> inQuotes
@@ -60,9 +60,9 @@ let createNumberFormatInfo (nf: NumberFormatInfo) =
   [
     yield sprintf "new NumberFormatInfo"
     yield sprintf "{"
-    yield! typeof<NumberFormatInfo>.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
-           |> Seq.filter (fun p -> inUnity |> List.contains (p.Name))
-           |> Seq.map (fun p -> sprintf "  %s = %s," p.Name (p.GetValue(nf) |> valueToString))
+    yield!  typeof<NumberFormatInfo>.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
+            |> Seq.filter (fun p -> inUnity |> List.contains (p.Name))
+            |> Seq.map (fun p -> sprintf "  %s = %s," p.Name (p.GetValue(nf) |> valueToString))
     yield sprintf "}"
   ]
 
