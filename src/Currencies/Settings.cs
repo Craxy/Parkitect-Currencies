@@ -257,7 +257,7 @@ namespace Craxy.Parkitect.Currencies
           _negativePattern = new Entry<int>("NegativePattern",
                                       () => NumberFormat.CurrencyNegativePattern,
                                       (value) => NumberFormat.CurrencyNegativePattern = value,
-                                      Validate(Between(0, 15), "Positive pattern must be between 0 and 15."),
+                                      Validate(Between(0, 15), "Negative pattern must be between 0 and 15."),
                                       () => DefaultNumberFormat.CurrencyNegativePattern
                                     );
         }
