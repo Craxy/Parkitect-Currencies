@@ -6,32 +6,28 @@ using MiniJSON;
 
 namespace Craxy.Parkitect.Currencies
 {
-  internal struct ValidationResult
+  internal readonly struct ValidationResult
   {
+    private readonly bool _isOk;
     public readonly string Message;
-    private ValidationResult(string message)
+    private ValidationResult(bool isOk, string message)
     {
+      _isOk = isOk;
       Message = message;
     }
 
-    public bool IsOk()
-    {
-      return Message == _ok;
-    }
-    public bool IsError()
-    {
-      return Message != _ok;
-    }
+    public bool IsOk() => _isOk;
+    public bool IsError() => !_isOk;
 
     private static string _ok = "";
     public static ValidationResult OK()
     {
-      return new ValidationResult(_ok);
+      return new ValidationResult(true, _ok);
     }
 
     public static ValidationResult Error(string message)
     {
-      return new ValidationResult(message);
+      return new ValidationResult(false, message);
     }
   }
 
