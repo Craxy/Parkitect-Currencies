@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Craxy.Parkitect.Currencies.Utils;
 using UnityEngine;
@@ -134,7 +135,7 @@ namespace Craxy.Parkitect.Currencies
           }
         }
 
-        if(!possibleValues.Contains(current))
+        if (!possibleValues.Contains(current))
         {
           Settings.NegativePattern.Value = current;
           GUILayout.Toggle(true, " " + value.ToString("C", Settings.NumberFormat));
@@ -167,23 +168,21 @@ namespace Craxy.Parkitect.Currencies
 
     private class Preset
     {
-      public Preset()
-      {
-        Remarks = "";
-      }
-
-      public CustomCultureInfo Culture { get; internal set; }
-      public string Remarks { get; internal set; }
+      public CultureInfo Culture { get; internal set; }
+      public RegionInfo Region { get; internal set; }
+      public string Remarks { get; internal set; } = "";
     }
     private Preset CreatePreset(string cultureName, string remarks)
     {
-      var culture = CultureInfoHelper.GetCulture(cultureName);
+      var culture = new CultureInfo(cultureName);
+      var region = new RegionInfo(cultureName);
       // we don't want all NumberFormat properties, but just some
       culture.NumberFormat = FromNumberFormat(culture.NumberFormat);
 
       return new Preset
       {
         Culture = culture,
+        Region = region,
         Remarks = remarks ?? "",
       };
     }
@@ -229,7 +228,7 @@ namespace Craxy.Parkitect.Currencies
     private void DrawPreset(Preset preset)
     {
 
-      var text = string.Format("{0} - {1}", preset.Culture.NumberFormat.CurrencySymbol, preset.Culture.RegionInfo.CurrencyEnglishName);
+      var text = string.Format("{0} - {1}", preset.Culture.NumberFormat.CurrencySymbol, preset.Region.CurrencyEnglishName);
       if (!string.IsNullOrEmpty(preset.Remarks))
       {
         text = string.Format("{0} ({1})", text, preset.Remarks);

@@ -141,8 +141,6 @@ namespace Craxy.Parkitect.Currencies
     {
       get
       {
-        // var info = new CultureInfo("en-US").NumberFormat;
-        // info.CurrencyNegativePattern = 1;
         return _defaultNumberFormat;
       }
     }

@@ -60,7 +60,6 @@ namespace Craxy.Parkitect.Currencies
       {
         if (_settings == null)
         {
-          //todo: load from file
           _settings = InitializeSettings();
         }
         return _settings;
