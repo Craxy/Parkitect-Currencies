@@ -4,6 +4,7 @@ using Craxy.Parkitect.Currencies.Utils;
 using UnityEngine;
 using System.Globalization;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Craxy.Parkitect.Currencies
 {
@@ -19,6 +20,13 @@ namespace Craxy.Parkitect.Currencies
       // -> shift down
       _textField = new GUIStyle(Skin.textField);
       _textField.margin.top = 17;
+
+      _smallText = new GUIStyle(Skin.label);
+      _smallText.fontSize = 12;
+      _smallText.margin.top = 10;
+      _smallText.margin.bottom = 5;
+
+      UpdateNotIncludedDisplay();
     }
 
     public void Draw()
@@ -41,21 +49,45 @@ namespace Craxy.Parkitect.Currencies
         return ScriptableSingleton<UIAssetManager>.Instance.guiSkin;
       }
     }
-    private GUIStyle _textField;
+    private GUIStyle _textField, _smallText;
     private void DrawSettings()
     {
       DrawSymbol();
       DrawSymbolPosition();
     }
 
+    private string _notIncluded = "";
+    private void UpdateSymbol(string symbol)
+    {
+      if(symbol != Settings.Symbol.Value)
+      {
+        Settings.Symbol.Value = symbol;
+        UpdateNotIncludedDisplay();
+      }
+    }
+    private void UpdateNotIncludedDisplay()
+    {
+      var font = FontInjector.GetDefaultGameFont();
+      _notIncluded = string.Join(", ", Settings.Symbol.Value.Distinct().Where(c => !font.HasCharacter(c, true)));
+    }
     private void DrawSymbol()
     {
       using (Layout.Horizontal())
       {
         GUILayout.Label("Symbol:");
         GUILayout.Space(5.0f);
-        Settings.Symbol.Value = GUILayout.TextField(Settings.Symbol.Value, 3, _textField, GUILayout.Width(60.0f));
+        var symbol = GUILayout.TextField(Settings.Symbol.Value, 3, _textField, GUILayout.Width(60.0f));
+        UpdateSymbol(symbol);
         GUILayout.FlexibleSpace();
+      }
+      if(_notIncluded.Length > 0)
+      {
+        using(Layout.Horizontal())
+        {
+          GUILayout.Space(50.0f);
+          GUILayout.Label($"Character(s) {_notIncluded} are not available ingame and will be displayed as ☐.", _smallText);
+          GUILayout.FlexibleSpace();
+        }
       }
     }
     private void DrawSymbolPosition()
@@ -157,13 +189,29 @@ namespace Craxy.Parkitect.Currencies
 
       return nf;
     }
+    //issue: sometimes a currency has multiple symbols -- and one is used in roboto (font) and the other in CultureInfo
+    //         for example yen has U+00A5 ¥ YEN SIGN, U+FFE5 ￥ FULLWIDTH YEN SIGN
+    //          roboto uses YEN SIGN, but CultureInfo returns FULLWIDTH YEN SIGN
+    private static Dictionary<char, char> ReplacementChars = new Dictionary<char, char>() {
+      { (char)0xFFE5, (char)0x00A5 } // U+FFE5 ￥ Fullwidth Yen sign -> U+00A5 ¥ Yen sign
+    };
+    private static char ReplaceCharIfNecessary(char c)
+    {
+      return ReplacementChars.TryGetValue(c, out var replacement) ? replacement : c;
+    }
+    private static string ReplaceCharsIfNecessary(string str)
+    {
+      return string.Join("", str.Select(ReplaceCharIfNecessary));
+    }
     private void ApplyNumberFormatInfo(NumberFormatInfo value)
     {
       var nf = Settings.NumberFormat;
 
-      nf.CurrencySymbol = value.CurrencySymbol;
+      nf.CurrencySymbol = ReplaceCharsIfNecessary(value.CurrencySymbol);
       nf.CurrencyPositivePattern = value.CurrencyPositivePattern;
       nf.CurrencyNegativePattern = value.CurrencyNegativePattern;
+
+      UpdateNotIncludedDisplay();
     }
 
     private class Preset

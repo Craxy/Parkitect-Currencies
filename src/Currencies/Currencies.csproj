@@ -38,6 +38,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Assets\Fonts\Roboto\Roboto-Regular SDF.json" />
+    <EmbeddedResource Include="Assets\Fonts\Roboto\Roboto-Regular SDF.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!--
       In Powershell (in $(ParkitectPath)/Parkitect_Data/Managed folder):
         $format = "<Reference Include=`"{0}`">`n  <HintPath>`$(ParkitectPath)/Parkitect_Data\Managed\{1}</HintPath>`n</Reference>"

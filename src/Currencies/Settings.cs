@@ -101,7 +101,7 @@ namespace Craxy.Parkitect.Currencies
       }
 
       // MiniJson does support only a couple of types
-      // and there types are not mapped directly.
+      // and there are types not mapped directly.
       // For example: int gets deserialized as long
       // https://gist.github.com/darktable/1411710
 

@@ -3,6 +3,7 @@ using System.Reflection;
 using Parkitect.UI;
 using UnityEngine;
 using System.Collections.Generic;
+using Craxy.Parkitect.Currencies.Utils;
 
 namespace Craxy.Parkitect.Currencies
 {
@@ -10,13 +11,13 @@ namespace Craxy.Parkitect.Currencies
   {
     public Settings Settings { get; set; }
 
-    private void OnDisable()
+    void OnDisable()
     {
       _lastForemostWindow = null;
       _windows = null;
     }
 
-    private void Update()
+    void Update()
     {
       TrackNewWindow();
     }
