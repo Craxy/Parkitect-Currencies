@@ -13,12 +13,16 @@ namespace Craxy.Parkitect.Currencies.Utils
   {
     class FontData
     {
+      // fields are set by JsonUtility.FromJson and not set manually
+      // -> "warning CS0649: Field '...' is never assigned to, and will always have its default value null"
+      #pragma warning disable 0649
       public string Name;
       public TMP_FontAsset.FontAssetTypes FontAssetTypes;
       public FaceInfo FontInfo;
       public KerningTable KerningInfo;
       public TMP_Glyph[] Glyphs;
       public FontCreationSetting CreationSettings;
+      #pragma warning restore 0649
     }
     #region Editor
     // Requires UnityEditor.dll
