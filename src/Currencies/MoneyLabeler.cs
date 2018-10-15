@@ -11,67 +11,46 @@ namespace Craxy.Parkitect.Currencies
   {
     public Settings Settings { get; set; }
 
-    void OnDisable()
+    void Start()
     {
-      _lastForemostWindow = null;
-      _windows = null;
+      currentSymbol = Settings.Symbol.DefaultValue;
     }
 
     void Update()
     {
-      TrackNewWindow();
-    }
-
-
-    private IList<UIWindowFrame> _windows = null;
-    private UIWindowFrame _lastForemostWindow = null;
-    private void TrackNewWindow()
-    {
-      // 3 to 4 ticks per loop when there's no change
-      // "A single tick represents one hundred nanoseconds or one ten-millionth of a second. There are 10,000 ticks in a millisecond, or 10 million ticks in a second."
-      // https://msdn.microsoft.com/en-us/library/system.datetime.ticks(v=vs.110).aspx
-
-
-      // a previous check if the currency symbol was changed is quite expensive:
-      // it adds 4 to 8 ticks (but prevents checks for new windows if symbol is default (which are around 100 to 300 ticks))
-      //if (Settings.NumberFormat.CurrencySymbol != Settings.DefaultNumberFormat.CurrencySymbol)
-
-      // the window on top is the last item in UIWindowsController.uiWindows
-      if (_windows == null)
+      if(currentSymbol != Settings.Symbol.Value)
       {
-        var field = typeof(UIWindowsController).GetField("uiWindows", BindingFlags.Instance | BindingFlags.NonPublic);
-        _windows = (IList<UIWindowFrame>)field.GetValue(UIWindowsController.Instance);
-      }
-
-      UIWindowFrame window = null;
-      if (_windows.Count > 0)
-      {
-        window = _windows[_windows.Count - 1];
-      }
-
-      if (!ReferenceEquals(window, _lastForemostWindow))
-      {
-        ChangeMoneySymbol(window);
-
-        _lastForemostWindow = window;
+        TryInject();
       }
     }
-
-    private void ChangeMoneySymbol(UIWindowFrame window)
+    private string currentSymbol;
+    private void TryInject()
     {
-      if(window != null)
+      var inputs = Resources.FindObjectsOfTypeAll<UIUnitInputField>();
+      // Mod.Log($"MoneyLabeler.TryInject. Inputs={inputs.Length}");
+      foreach (var input in inputs)
       {
-        // search for unit symbol
-        foreach (var input in window.GetComponentsInChildren<UIUnitInputField>(true).Where(i => !(i is UIVelocityInputField)))
+        if(input == null || input is UIVelocityInputField)
         {
-          // unitText = null: some input fields don't have a label
-          // unitText.text = Default: not all input fields are for money: Duration/Time, Velocity (which is handled by where)
-          if (input != null && input.unitText != null && input.unitText.text == Settings.Symbol.DefaultValue)
+          continue;
+        }
+
+        try
+        {
+          if (input.unitText != null && (input.unitText.text == currentSymbol))
           {
+            // Mod.Log($"Looking at {input} with unitText={input.unitText.text}");
             input.unitText.text = Settings.Symbol.Value;
           }
+
+        }
+        catch (System.Exception ex)
+        {
+          Mod.Log($"Exception while trying injecting into {input}: {ex.ToString()} -- input.unitText={input.unitText}");
         }
       }
+
+      currentSymbol = Settings.Symbol.Value;
     }
   }
 }
