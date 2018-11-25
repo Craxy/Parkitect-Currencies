@@ -8,13 +8,15 @@ using System.Collections.Generic;
 
 namespace Craxy.Parkitect.Currencies
 {
-  internal class SettingsWindow
+  sealed class SettingsWindow
   {
-    public Settings Settings { get; private set; }
+    private readonly Settings Settings;
+    private readonly SimpleFontInfo CustomFontInfo;
 
-    public SettingsWindow(Settings settings)
+    public SettingsWindow(Settings settings, SimpleFontInfo customFontInfo)
     {
       Settings = settings;
+      CustomFontInfo = customFontInfo;
 
       // style for TextField isn't in correct position
       // -> shift down
@@ -42,13 +44,7 @@ namespace Craxy.Parkitect.Currencies
       }
     }
 
-    private static GUISkin Skin
-    {
-      get
-      {
-        return ScriptableSingleton<UIAssetManager>.Instance.guiSkin;
-      }
-    }
+    private static GUISkin Skin => ScriptableSingleton<UIAssetManager>.Instance.guiSkin;
     private GUIStyle _textField, _smallText;
     private void DrawSettings()
     {
@@ -67,8 +63,8 @@ namespace Craxy.Parkitect.Currencies
     }
     private void UpdateNotIncludedDisplay()
     {
-      var font = FontInjector.GetDefaultGameFont();
-      _notIncluded = string.Join(", ", Settings.Symbol.Value.Distinct().Where(c => !font.HasCharacter(c, true)));
+      var missing = Settings.Symbol.Value.Distinct().Where(c => !FontHelper.IsInGameOrCustomFont(c, CustomFontInfo));
+      _notIncluded = string.Join(",", missing);
     }
     private void DrawSymbol()
     {

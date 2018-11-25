@@ -3,10 +3,11 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using MiniJSON;
+using System.IO;
 
 namespace Craxy.Parkitect.Currencies
 {
-  internal readonly struct ValidationResult
+  readonly struct ValidationResult
   {
     private readonly bool _isOk;
     public readonly string Message;
@@ -31,7 +32,7 @@ namespace Craxy.Parkitect.Currencies
     }
   }
 
-  internal class Entry<T>
+  sealed class Entry<T>
   {
     // for each settings:
     //  validate
@@ -129,7 +130,7 @@ namespace Craxy.Parkitect.Currencies
     }
   }
 
-  internal sealed class Settings
+  sealed class Settings
   {
     #region Number Format
     private static NumberFormatInfo _defaultNumberFormat = GameController.currencyFormat;
@@ -263,7 +264,7 @@ namespace Craxy.Parkitect.Currencies
     #endregion
 
     #region Serialize
-    public string SaveToJson()
+    public string ToJson()
     {
       var dict = new Dictionary<string, object>();
       Symbol.SaveToDictionary(dict);
@@ -274,7 +275,7 @@ namespace Craxy.Parkitect.Currencies
 
       return Json.Serialize(dict);
     }
-    public string[] LoadFromJson(string json)
+    public string[] FromJson(string json)
     {
       var dict = (Dictionary<string, object>)Json.Deserialize(json);
 
@@ -292,5 +293,49 @@ namespace Craxy.Parkitect.Currencies
       ;
     }
     #endregion
+
+    #region Load/Save
+    public static Settings Load(string path)
+    {
+      var settings = new Settings();
+
+      if(File.Exists(path))
+      {
+        try
+        {
+          var json = File.ReadAllText(path);
+          var errors = settings.FromJson(json);
+
+          if (errors.Length > 0)
+          {
+            Mod.Log("Error(s) loading settings: " + String.Join("; ", errors));
+          }
+          else
+          {
+            Mod.Log(String.Format("Settings loaded from \"{0}\"", path));
+          }
+        }
+        catch (Exception ex)
+        {
+          Mod.Log("Exception while loading settings: " + ex.Message);
+        }
+      }
+
+      return settings;
+    }
+    public void Save(string path)
+    {
+      try
+      {
+        var json = this.ToJson();
+        File.WriteAllText(path, json);
+        Mod.Log(String.Format("Settings saved to \"{0}\"", path));
+      }
+      catch (Exception ex)
+      {
+        Mod.Log("Exception while saving settings: " + ex.Message);
+      }
+    }
+    #endregion Load/Save
   }
 }

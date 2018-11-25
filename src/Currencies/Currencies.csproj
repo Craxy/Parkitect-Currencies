@@ -40,6 +40,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Assets\Fonts\Roboto\Roboto-Regular SDF.json" />
     <EmbeddedResource Include="Assets\Fonts\Roboto\Roboto-Regular SDF.png" />
+    <EmbeddedResource Include="Assets\Fonts\Roboto\Roboto-Regular SDF.txt" />
+    <Compile Remove="Editor\*.cs" />
+    <None Include="Editor\*.cs" />
   </ItemGroup>
 
   <ItemGroup>

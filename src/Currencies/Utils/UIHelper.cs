@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Craxy.Parkitect.Currencies.Utils
 {
-  public class Layout : IDisposable
+  sealed class Layout : IDisposable
   {
     //abusing IDisposable......
     private static readonly Layout _horizontal = new Layout(() => GUILayout.BeginHorizontal(), GUILayout.EndHorizontal);
