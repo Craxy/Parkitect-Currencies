@@ -52,7 +52,7 @@ public class FontExporter
       // export name and characters
       {
         var name = font.name;
-        var chars = font.creationSettings.characterSequence;
+        var chars = string.Join("", font.characterDictionary.Keys.Select(c => (char)c));
 
         var file = $"{font.name}.txt";
         var path = Path.Combine(folder, file);
