@@ -258,6 +258,8 @@ docs/tools/FSharp.Formatting.svclog
 FAKE_CACHE*.dll
 Settings.FSharpLint
 
+.ionide
+
 
 # ===================================================
 # Exclude Parkitect files
