@@ -9,10 +9,15 @@
   <PropertyGroup>
     <!-- Used as identifier in parkitect (-> IMod.Identifier) -->
     <Identifier>Craxy@Currencies</Identifier>
+    <!-- Version of this mod. Used as AssemblyVersion and FileVersion-->
+    <Version>1.0.1</Version>
     <!-- Used as name in parkitect(-> IMod.Name) and as AssemblyTitle and AssemblyProduct-->
     <Name>Currencies</Name>
     <!-- Used as description in parkitect (-> IMod.Description) and as AssemblyDescription -->
     <Description>Change the currency symbol.</Description>
+    
+    <Authors>Craxy</Authors>
+    <RepositoryUrl>https://github.com/Craxy/Parkitect-Currencies</RepositoryUrl>
 
     <!-- dll name -->
     <AssemblyName>$(Identifier)</AssemblyName>
@@ -283,6 +288,8 @@
   <PropertyGroup>
     <ModDir>$(ParkitectUserPath)\Mods\$(FolderName)</ModDir>
 
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <FileVersion>$(Version)</FileVersion>
     <AssemblyTitle>$(Name)</AssemblyTitle>
     <Product>$(Name)</Product>
   </PropertyGroup>
