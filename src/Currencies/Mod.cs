@@ -27,7 +27,11 @@ namespace Craxy.Parkitect.Currencies
 
       T GetAssemblyAttribute<T>() where T : Attribute => (T)assembly.GetCustomAttribute(typeof(T));
 
-      name = GetAssemblyAttribute<AssemblyTitleAttribute>().Title;
+      name = GetAssemblyAttribute<AssemblyTitleAttribute>().Title
+        #if DEBUG
+          + " (Debug)"
+        #endif
+      ;
       description = GetAssemblyAttribute<AssemblyDescriptionAttribute>().Description;
     }
 
