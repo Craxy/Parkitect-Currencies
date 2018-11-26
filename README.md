@@ -5,7 +5,7 @@ Mod for [Parkitect](http://themeparkitect.com/).
 Change the currency symbol.  
 Parkitect displays money as Dollars marked by *$*. With this mod you can change the symbol to other representations like *€* or *£*.  
 
-Besides just exchanging the symbol, you can also control where to put it to match a regional preference: While the default US-dollar style is *$123.12*, the German preference (with Euro) is *123.12 €* [*](#star1).  
+Besides just exchanging the symbol, you can also control where to put it to match a regional preference: While the default US-dollar style is *$123.12*, the German preference (with Euro) is *123.12 €* <a name="star1-source"></a>[*](#star1).  
 ![settings](./docs/files/img/ExampleEuro.png)
 
 <br></br>
@@ -68,4 +68,4 @@ If this mod is responsible for a crash or an error/exception please include your
 
 <br></br>
 <br></br>
-<a name="star1"></a>*: There are more differences between the US and DE currency presentation like the decimal separator (*123.12* vs *123,12*). This mod uses always the US version. Although it could be changed for most money displays, there are locations where this isn't possible (in money input fields like changing the fee of a ride). Additionally all other (not currency) number displays would still be in US style.
+<a name="star1"></a>*: There are more differences between the US and DE currency presentation like the decimal separator (*123.12* vs *123,12*). This mod uses always the US version. Although it could be changed for most money displays, there are locations where this isn't possible (in money input fields like changing the fee of a ride). Additionally all other (not currency) number displays would still be in US style. [↩](#star1-source)
