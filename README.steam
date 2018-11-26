@@ -1,0 +1,59 @@
+[h1][b]Currencies[/b][/h1]
+
+Change the currency symbol.
+Parkitect displays money as Dollars marked by [i]$[/i]. With this mod you can change the symbol to other representations like [i]€[/i] or [i]£[/i].  
+
+Besides just exchanging the symbol, you can also control where to put it to match a regional preference: While the default US-dollar style is [i]$123.12[/i], the German preference (with Euro) is [i]123.12 €[/i].  
+
+[b]Note[/b]: The full 
+[url=https://github.com/Craxy/Parkitect-Currencies]readme[/url] with images, installation description for non-steam versions and further notes is on [url=https://github.com/Craxy/Parkitect-Currencies]the GitHub page of this mod[/url]. 
+
+[h1]Settings[/h1]
+([i]Options -> Mods -> Currencies -> Settings[\i])
+[quote]
+[h1]Symbols[/h1]
+The symbol can be any sequence of characters between a length of 0 and 3. Ergo no symbol at all up to ISO 4217 codes (like EUR or USD). However it is not recommended to use a symbol longer than 1 character: Longer symbols might not fit in their fixed position and might stick out or even change the layout of a window.  
+
+The list of available characters in game is rather limited.  
+Unfortunately the settings menu uses a different font display than ingame. Therefore some symbols might be displayed in the settings, but not in the game. In that case a warning is shown. If you keep a missing symbol it will show up as a box in game: ☐.
+
+The default Parkitect font supports just the most common currency symbols like $, € and £. For more options this mod injects a couple additional currency symbols like ₽ (Ruble) or ₩ (Won). If there's a symbol missing you would like to use, best request it as a [[url=https://github.com/Craxy/Parkitect-Currencies/issues]issue on github[/url].
+
+The injected symbols use a different font ([url=https://fonts.google.com/specimen/Robot][i]Robot[/i][/url]) than Parkitect ([i]Museo[/i]). Therefore the injected symbols look slightly different in style -- but they are strange symbols, so it shouldn't be too noticeable.
+
+[h1]Symbol position[/h1]
+The Symbol can either be positioned before or after the number. Additional there might be an additional space between the currency symbol and the value. The possible representations are: € 123.12, €123.12, 123.12€, 123.12 €  
+For negative values there are even more possible positions because of the negative sign: 
+-€ 123.12, € -123.12, €-123.12, -€123.12, -123.12€, -123.12 €  
+[/quote]
+
+[quote]
+[h1]Additional Notes:[/h1]
+[list]
+  [*] The change is purely cosmetic: $123.12 = 123.12 € = £123.12 = ¥123.12 = R 123.12 -- there's no currency conversion.
+  [*] The updated currency applies once a game is loaded. It doesn't show up in the main menu.
+  [*] If you change the currency symbol while in game (via the pause/ESC menu): The displays with a currency symbol only update to the new one when their text gets updated by Parkitect. That might not be immediately but after certain actions like a new month (-> statistics get updated) or not at all during the current session because the text were cached (this happens in the Finances window with past monthly reports). [b]It is therefore recommended to save your current park and reload it to force all texts to update after you changed the currency symbol![/b]
+[/list]
+[/quote]
+
+
+[quote]
+[h1]Release notes[/h1]
+Listed in [url=https://github.com/Craxy/Parkitect-Currencies/RELEASE_NOTES.md]on GitHub[/url] and on the [url=https://github.com/Craxy/Parkitect-Currencies/releases]GitHub release page[/url].  
+A simplified changelog can also be found in the Change Notes page on the Steam Workshop page for this page.
+[/quote]
+[quote]
+[h1]Issues[/h1]
+
+Please report issues via the [url=https://github.com/Craxy/Parkitect-Currencies/issues]issue tracker on GitHub[/url].  
+If this mod is responsible for a crash or an error/exception please include your [i]output_log.txt[/i]. Copy this log file immediately after the crash -- its content is cleared for each Parkitect start.  
+
+[i]output_log.txt[/i] is Parkitects log file, located at 
+* Windows: %USERPROFILE%\AppData\LocalLow\Texel Raptor\Parkitect\output_log.txt
+* Linux: ~/.config/unity3d/Texel Raptor/Parkitect/Player.log
+* Mac: ~/Library/Logs/Unity/Player.log
+[/quote]
+[quote]
+[h1]Source code[/h1]
+[url=https://github.com/Craxy/Parkitect-Currencies]Craxy/Parkitect-Currencies on GitHub[/url]  
+[/quote]
