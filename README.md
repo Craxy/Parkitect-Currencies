@@ -28,7 +28,7 @@ If you keep a missing symbol it will show up as a box in game:
 
 The default Parkitect font supports just the most common currency symbols like $, € and £. For more options this mod injects a couple additional currency symbols like ₽ (Ruble) or ₩ (Won). If there's a symbol missing you would like to use, best request it as a [issue on github](https://github.com/Craxy/Parkitect-Currencies/issues).
 
-The injected symbols use a different font ([*Roboto*](https://fonts.google.com/specimen/Roboto)) than Parkitect (*Museo*). Therefore the injected symbols look slightly different in style -- but they are strange symbols, so it shouldn't be no noticeable.
+The injected symbols use a different font ([*Roboto*](https://fonts.google.com/specimen/Roboto)) than Parkitect (*Museo*). Therefore the injected symbols look slightly different in style -- but they are strange symbols, so it shouldn't be too noticeable.
 
 ### Symbol position
 The Symbol can either be positioned before or after the number. Additional there might be an additional space between the currency symbol and the value. The possible representations are: € 123.12, €123.12, 123.12€, 123.12 €  
