@@ -24,7 +24,7 @@ The list of available characters in game is rather limited.
 Unfortunately the settings menu uses a different font display than ingame. Therefore some symbols might be displayed in the settings, but not in the game. In that case a warning is shown:
 ![Missing character](./docs/files/img/SettingsMenu_Missing.png)  
 If you keep a missing symbol it will show up as a box in game:  
-![Missing character](./docs/files/img/InGame_Missing.png)  
+![Missing character](./docs/files/img/Ingame_Missing.png)  
 
 The default Parkitect font supports just the most common currency symbols like $, € and £. For more options this mod injects a couple additional currency symbols like ₽ (Ruble) or ₩ (Won). If there's a symbol missing you would like to use, best request it as a [issue on github](https://github.com/Craxy/Parkitect-Currencies/issues).
 
