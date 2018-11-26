@@ -42,7 +42,7 @@ For negative values there are even more possible positions because of the negati
 **Note**: The updated currency applies once a game is loaded. It doesn't show up in the main menu.
 
 **Note**: If you change the currency symbol while in game (via the pause/*ESC* menu): The displays with a currency symbol only update to the new one when their text gets updated by Parkitect. That might not be immediately but after certain actions like a new month (-> statistics get updated) or not at all during the current session because the text were cached (this happens in the Finances window with past monthly reports).  
-**It is therefore recommended to save your current park and reload it to force the new symbol to update everywhere!**
+**It is therefore recommended to save your current park and reload it to force all texts to update after you changed the currency symbol!**
 
 <br></br>
 <br></br>
