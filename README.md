@@ -1,6 +1,6 @@
 Currencies
 ===============
-Mod for [Parkitect](http://themeparkitect.com/).
+Mod for [Parkitect](http://themeparkitect.com/).  
 
 Change the currency symbol.  
 Parkitect displays money as Dollars marked by *$*. With this mod you can change the symbol to other representations like *€* or *£*.  
@@ -8,7 +8,6 @@ Parkitect displays money as Dollars marked by *$*. With this mod you can change 
 Besides just exchanging the symbol, you can also control where to put it to match a regional preference: While the default US-dollar style is *$123.12*, the German preference (with Euro) is *123.12 €* <a name="star1-source"></a>[*](#star1).  
 ![settings](./docs/files/img/ExampleEuro.png)
 
-<br></br>
 ## Installation
 * Steam: Just subscribe to this mod on the Steam Workshop.
 * Other:
@@ -45,12 +44,13 @@ For negative values there are even more possible positions because of the negati
 **It is therefore recommended to save your current park and reload it to force all texts to update after you changed the currency symbol!**
 
 <br></br>
-<br></br>
-
 
 ### Release notes
 Listed in [RELEASE_NOTES.md](./RELEASE_NOTES.md) and on the [release page](https://github.com/Craxy/Parkitect-Currencies/releases).  
 A simplified changelog can also be found in the Change Notes page on the Steam Workshop page for this page.
+
+Latest version: *1.1.0*  
+Tested with Parkitect *Beta 12*
 
 
 ### Issues

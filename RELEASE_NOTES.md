@@ -1,4 +1,5 @@
 ### 1.1.0 - *unreleased*
+Tested with Parkitect *Beta 12*
 * Fix [#1](https://github.com/Craxy/Parkitect-Currencies/pull/1)
 * Remove Parkitect Nexus dependency and use Parkitect directly
 * Update to .Net 4.5
