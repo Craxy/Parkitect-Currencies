@@ -1,23 +1,34 @@
-﻿using System.Linq;
+using System;
+using System.Linq;
 using Craxy.Parkitect.Currencies.Utils;
 using UnityEngine;
 using System.Globalization;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Craxy.Parkitect.Currencies
 {
-  internal class SettingsWindow
+  sealed class SettingsWindow
   {
-    public Settings Settings { get; private set; }
+    private readonly Settings Settings;
+    private readonly SimpleFontInfo CustomFontInfo;
 
-    public SettingsWindow(Settings settings)
+    public SettingsWindow(Settings settings, SimpleFontInfo customFontInfo)
     {
       Settings = settings;
+      CustomFontInfo = customFontInfo;
 
       // style for TextField isn't in correct position
       // -> shift down
       _textField = new GUIStyle(Skin.textField);
       _textField.margin.top = 17;
+
+      _smallText = new GUIStyle(Skin.label);
+      _smallText.fontSize = 12;
+      _smallText.margin.top = 10;
+      _smallText.margin.bottom = 5;
+
+      UpdateNotIncludedDisplay();
     }
 
     public void Draw()
@@ -33,28 +44,46 @@ namespace Craxy.Parkitect.Currencies
       }
     }
 
-    private static GUISkin Skin
-    {
-      get
-      {
-        return ScriptableSingleton<UIAssetManager>.Instance.guiSkin;
-      }
-    }
-    private GUIStyle _textField;
+    private static GUISkin Skin => ScriptableSingleton<UIAssetManager>.Instance.guiSkin;
+    private GUIStyle _textField, _smallText;
     private void DrawSettings()
     {
       DrawSymbol();
       DrawSymbolPosition();
     }
 
+    private string _notIncluded = "";
+    private void UpdateSymbol(string symbol)
+    {
+      if(symbol != Settings.Symbol.Value)
+      {
+        Settings.Symbol.Value = symbol;
+        UpdateNotIncludedDisplay();
+      }
+    }
+    private void UpdateNotIncludedDisplay()
+    {
+      var missing = Settings.Symbol.Value.Distinct().Where(c => !FontHelper.IsInGameOrCustomFont(c, CustomFontInfo));
+      _notIncluded = string.Join(",", missing);
+    }
     private void DrawSymbol()
     {
       using (Layout.Horizontal())
       {
         GUILayout.Label("Symbol:");
         GUILayout.Space(5.0f);
-        Settings.Symbol.Value = GUILayout.TextField(Settings.Symbol.Value, 3, _textField, GUILayout.Width(60.0f));
+        var symbol = GUILayout.TextField(Settings.Symbol.Value, 3, _textField, GUILayout.Width(60.0f));
+        UpdateSymbol(symbol);
         GUILayout.FlexibleSpace();
+      }
+      if(_notIncluded.Length > 0)
+      {
+        using(Layout.Horizontal())
+        {
+          GUILayout.Space(50.0f);
+          GUILayout.Label($"Character(s) {_notIncluded} are not available ingame and will be displayed as ☐.", _smallText);
+          GUILayout.FlexibleSpace();
+        }
       }
     }
     private void DrawSymbolPosition()
@@ -134,7 +163,7 @@ namespace Craxy.Parkitect.Currencies
           }
         }
 
-        if(!possibleValues.Contains(current))
+        if (!possibleValues.Contains(current))
         {
           Settings.NegativePattern.Value = current;
           GUILayout.Toggle(true, " " + value.ToString("C", Settings.NumberFormat));
@@ -156,34 +185,48 @@ namespace Craxy.Parkitect.Currencies
 
       return nf;
     }
+    //issue: sometimes a currency has multiple symbols -- and one is used in roboto (font) and the other in CultureInfo
+    //         for example yen has U+00A5 ¥ YEN SIGN, U+FFE5 ￥ FULLWIDTH YEN SIGN
+    //          roboto uses YEN SIGN, but CultureInfo returns FULLWIDTH YEN SIGN
+    private static Dictionary<char, char> ReplacementChars = new Dictionary<char, char>() {
+      { (char)0xFFE5, (char)0x00A5 } // U+FFE5 ￥ Fullwidth Yen sign -> U+00A5 ¥ Yen sign
+    };
+    private static char ReplaceCharIfNecessary(char c)
+    {
+      return ReplacementChars.TryGetValue(c, out var replacement) ? replacement : c;
+    }
+    private static string ReplaceCharsIfNecessary(string str)
+    {
+      return string.Join("", str.Select(ReplaceCharIfNecessary));
+    }
     private void ApplyNumberFormatInfo(NumberFormatInfo value)
     {
       var nf = Settings.NumberFormat;
 
-      nf.CurrencySymbol = value.CurrencySymbol;
+      nf.CurrencySymbol = ReplaceCharsIfNecessary(value.CurrencySymbol);
       nf.CurrencyPositivePattern = value.CurrencyPositivePattern;
       nf.CurrencyNegativePattern = value.CurrencyNegativePattern;
+
+      UpdateNotIncludedDisplay();
     }
 
     private class Preset
     {
-      public Preset()
-      {
-        Remarks = "";
-      }
-
-      public CustomCultureInfo Culture { get; internal set; }
-      public string Remarks { get; internal set; }
+      public CultureInfo Culture { get; internal set; }
+      public RegionInfo Region { get; internal set; }
+      public string Remarks { get; internal set; } = "";
     }
     private Preset CreatePreset(string cultureName, string remarks)
     {
-      var culture = CultureInfoHelper.GetCulture(cultureName);
+      var culture = new CultureInfo(cultureName);
+      var region = new RegionInfo(cultureName);
       // we don't want all NumberFormat properties, but just some
       culture.NumberFormat = FromNumberFormat(culture.NumberFormat);
 
       return new Preset
       {
         Culture = culture,
+        Region = region,
         Remarks = remarks ?? "",
       };
     }
@@ -229,7 +272,7 @@ namespace Craxy.Parkitect.Currencies
     private void DrawPreset(Preset preset)
     {
 
-      var text = string.Format("{0} - {1}", preset.Culture.NumberFormat.CurrencySymbol, preset.Culture.RegionInfo.CurrencyEnglishName);
+      var text = string.Format("{0} - {1}", preset.Culture.NumberFormat.CurrencySymbol, preset.Region.CurrencyEnglishName);
       if (!string.IsNullOrEmpty(preset.Remarks))
       {
         text = string.Format("{0} ({1})", text, preset.Remarks);

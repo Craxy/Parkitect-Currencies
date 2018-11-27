@@ -3,39 +3,36 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using MiniJSON;
+using System.IO;
 
 namespace Craxy.Parkitect.Currencies
 {
-  internal struct ValidationResult
+  readonly struct ValidationResult
   {
+    private readonly bool _isOk;
     public readonly string Message;
-    private ValidationResult(string message)
+    private ValidationResult(bool isOk, string message)
     {
+      _isOk = isOk;
       Message = message;
     }
 
-    public bool IsOk()
-    {
-      return Message == _ok;
-    }
-    public bool IsError()
-    {
-      return Message != _ok;
-    }
+    public bool IsOk() => _isOk;
+    public bool IsError() => !_isOk;
 
     private static string _ok = "";
     public static ValidationResult OK()
     {
-      return new ValidationResult(_ok);
+      return new ValidationResult(true, _ok);
     }
 
     public static ValidationResult Error(string message)
     {
-      return new ValidationResult(message);
+      return new ValidationResult(false, message);
     }
   }
 
-  internal class Entry<T>
+  sealed class Entry<T>
   {
     // for each settings:
     //  validate
@@ -78,17 +75,17 @@ namespace Craxy.Parkitect.Currencies
       }
       set
       {
-        if(Object.Equals(value, Value))
+        if (Object.Equals(value, Value))
         {
           return;
         }
 
         var validation = Validate(value);
-        if(validation.IsError())
+        if (validation.IsError())
         {
           throw new ArgumentException(validation.Message, "value");
         }
-      _setValue(value);
+        _setValue(value);
       }
     }
 
@@ -99,18 +96,18 @@ namespace Craxy.Parkitect.Currencies
     public ValidationResult LoadFromDictionary(Dictionary<string, Object> dict)
     {
       object value;
-      if(!dict.TryGetValue(Name, out value))
+      if (!dict.TryGetValue(Name, out value))
       {
         return ValidationResult.Error(String.Format("There's no data for '{0}'.", Name));
       }
 
       // MiniJson does support only a couple of types
-      // and there types are not mapped directly.
+      // and there are types not mapped directly.
       // For example: int gets deserialized as long
       // https://gist.github.com/darktable/1411710
 
       // null is always wrong
-      if(value == null)
+      if (value == null)
       {
         return ValidationResult.Error(String.Format("Data for '{0}' is null.", Name));
       }
@@ -133,7 +130,7 @@ namespace Craxy.Parkitect.Currencies
     }
   }
 
-  internal sealed class Settings
+  sealed class Settings
   {
     #region Number Format
     private static NumberFormatInfo _defaultNumberFormat = GameController.currencyFormat;
@@ -141,8 +138,6 @@ namespace Craxy.Parkitect.Currencies
     {
       get
       {
-        // var info = new CultureInfo("en-US").NumberFormat;
-        // info.CurrencyNegativePattern = 1;
         return _defaultNumberFormat;
       }
     }
@@ -185,7 +180,7 @@ namespace Craxy.Parkitect.Currencies
                                       (value) => NumberFormat.CurrencySymbol = value,
                                       Validate(LengthBetween(0, 3), "Symbol must be between 0 and 3 characters."),
                                       () => DefaultNumberFormat.CurrencySymbol
-                                     );
+                                    );
         }
         return _symbol;
       }
@@ -204,7 +199,7 @@ namespace Craxy.Parkitect.Currencies
                                       (value) => NumberFormat.CurrencyDecimalSeparator = value,
                                       Validate(LengthBetween(0, 3), "Decimal separator must be between 1 and 3 characters."),
                                       () => DefaultNumberFormat.CurrencyDecimalSeparator
-                                     );
+                                    );
         }
         return _decimalSeparator;
       }
@@ -223,7 +218,7 @@ namespace Craxy.Parkitect.Currencies
                                       (value) => NumberFormat.CurrencyGroupSeparator = value,
                                       Validate(LengthBetween(0, 3), "Group separator must be between 0 and 3 characters."),
                                       () => DefaultNumberFormat.CurrencyGroupSeparator
-                                     );
+                                    );
         }
         return _groupSeparator;
       }
@@ -242,7 +237,7 @@ namespace Craxy.Parkitect.Currencies
                                       (value) => NumberFormat.CurrencyPositivePattern = value,
                                       Validate(Between(0, 3), "Positive pattern must be between 0 and 3."),
                                       () => DefaultNumberFormat.CurrencyPositivePattern
-                                     );
+                                    );
         }
         return _positivePattern;
       }
@@ -259,9 +254,9 @@ namespace Craxy.Parkitect.Currencies
           _negativePattern = new Entry<int>("NegativePattern",
                                       () => NumberFormat.CurrencyNegativePattern,
                                       (value) => NumberFormat.CurrencyNegativePattern = value,
-                                      Validate(Between(0, 15), "Positive pattern must be between 0 and 15."),
+                                      Validate(Between(0, 15), "Negative pattern must be between 0 and 15."),
                                       () => DefaultNumberFormat.CurrencyNegativePattern
-                                     );
+                                    );
         }
         return _negativePattern;
       }
@@ -269,7 +264,7 @@ namespace Craxy.Parkitect.Currencies
     #endregion
 
     #region Serialize
-    public string SaveToJson()
+    public string ToJson()
     {
       var dict = new Dictionary<string, object>();
       Symbol.SaveToDictionary(dict);
@@ -280,7 +275,7 @@ namespace Craxy.Parkitect.Currencies
 
       return Json.Serialize(dict);
     }
-    public string[] LoadFromJson(string json)
+    public string[] FromJson(string json)
     {
       var dict = (Dictionary<string, object>)Json.Deserialize(json);
 
@@ -293,10 +288,54 @@ namespace Craxy.Parkitect.Currencies
           NegativePattern.LoadFromDictionary(dict),
         }
         .Where(vr => vr.IsError())
-        .Select(vr  => vr.Message)
+        .Select(vr => vr.Message)
         .ToArray()
       ;
     }
     #endregion
+
+    #region Load/Save
+    public static Settings Load(string path)
+    {
+      var settings = new Settings();
+
+      if(File.Exists(path))
+      {
+        try
+        {
+          var json = File.ReadAllText(path);
+          var errors = settings.FromJson(json);
+
+          if (errors.Length > 0)
+          {
+            Mod.Log("Error(s) loading settings: " + String.Join("; ", errors));
+          }
+          else
+          {
+            Mod.Log(String.Format("Settings loaded from \"{0}\"", path));
+          }
+        }
+        catch (Exception ex)
+        {
+          Mod.Log("Exception while loading settings: " + ex.Message);
+        }
+      }
+
+      return settings;
+    }
+    public void Save(string path)
+    {
+      try
+      {
+        var json = this.ToJson();
+        File.WriteAllText(path, json);
+        Mod.Log(String.Format("Settings saved to \"{0}\"", path));
+      }
+      catch (Exception ex)
+      {
+        Mod.Log("Exception while saving settings: " + ex.Message);
+      }
+    }
+    #endregion Load/Save
   }
 }
