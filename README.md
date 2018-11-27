@@ -1,15 +1,18 @@
 Currencies
 ===============
 Mod for [Parkitect](http://themeparkitect.com/).  
+Availabe on the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=1576312321).
 
 Change the currency symbol.  
+
+
 Parkitect displays money as Dollars marked by *$*. With this mod you can change the symbol to other representations like *€* or *£*.  
 
 Besides just exchanging the symbol, you can also control where to put it to match a regional preference: While the default US-dollar style is *$123.12*, the German preference (with Euro) is *123.12 €* <a name="star1-source"></a>[*](#star1).  
 ![settings](./docs/files/img/ExampleEuro.png)
 
 ## Installation
-* Steam: Just subscribe to this mod on the Steam Workshop.
+* Steam: Just subscribe to [the mod on the Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=1576312321).
 * Other:
   * Download the newest version of this mod from the [release page on GitHub](https://github.com/Craxy/Parkitect-Currencies/releases).
   * Extract the zip file into `{MyDocuments}/Parkitect/Mods/`.
@@ -47,7 +50,7 @@ For negative values there are even more possible positions because of the negati
 
 ### Release notes
 Listed in [RELEASE_NOTES.md](./RELEASE_NOTES.md) and on the [release page](https://github.com/Craxy/Parkitect-Currencies/releases).  
-A simplified changelog can also be found in the Change Notes page on the Steam Workshop page for this page.
+A simplified changelog can also be found [on the Change Notes page on the Steam Workshop page](https://steamcommunity.com/sharedfiles/filedetails/changelog/1576312321) for this mod.
 
 Latest version: *1.1.0*  
 Tested with Parkitect *Beta 12*
