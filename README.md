@@ -17,6 +17,8 @@ Besides just exchanging the symbol, you can also control where to put it to matc
   * Download the newest version of this mod from the [release page on GitHub](https://github.com/Craxy/Parkitect-Currencies/releases).
   * Extract the zip file into `{MyDocuments}/Parkitect/Mods/`.
 
+This mod doesn't alter savegames. That means you can disable and remove this mod at any time without any impact on savegames, scenarios, etc.. The only effect is that the currency symbol is reverted back to its original *$* sign.
+
 ## Settings 
 ![Settings](./docs/files/img/SettingsMenu.png)
 ### Symbols
