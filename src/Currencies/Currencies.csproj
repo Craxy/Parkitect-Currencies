@@ -29,6 +29,8 @@
     <!-- Starts Parkitect via steam. $(SteamExe) must be specified! -->
     <!-- Another advantage of starting via steam: otherwise msbuild waits for Parkitect to close -->
     <UseSteam>false</UseSteam>
+    
+    <SteamWorkshopId>1576312321</SteamWorkshopId>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -293,11 +295,15 @@
     <AssemblyTitle>$(Name)</AssemblyTitle>
     <Product>$(Name)</Product>
   </PropertyGroup>
-
+  
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <RemoveDir Directories="$(ModDir)" />
     <MakeDir Directories="$(ModDir)" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ModDir)/$(TargetFileName)" />
+    <WriteLinesToFile
+      File="$(ModDir)/steam_workshop-id"
+      Lines="$(SteamWorkshopId)"
+      />
   </Target>
   <Target Name="StartParkitect" AfterTargets="PostBuild" Condition="'$(StartParkitect)' == 'true'">
     <Exec Condition="'$(UseSteam)' != 'true'" Command='"$(ParkitectPath)/Parkitect"' />
