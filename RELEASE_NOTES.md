@@ -1,4 +1,4 @@
-### 1.1.0 - *unreleased*
+### 1.1.0 - 2018-11-28
 Tested with Parkitect *Beta 12*
 * Fix [#1](https://github.com/Craxy/Parkitect-Currencies/pull/1)
 * Remove Parkitect Nexus dependency and use Parkitect directly
@@ -12,6 +12,7 @@ Tested with Parkitect *Beta 12*
 * Update build system
   * Use new csproj file with metadata
   * Add post compile action to autocopy mod and start game
+* Upload to [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=1576312321)
 
 #### 1.0.1 - 2016-10-16
 * Increase speed for labeling money input fields
