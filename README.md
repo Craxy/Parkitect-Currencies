@@ -1,7 +1,7 @@
 Currencies
 ===============
 Mod for [Parkitect](http://themeparkitect.com/).  
-Availabe on the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=1576312321).
+Available on the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=1576312321).
 
 Change the currency symbol.  
 
