@@ -1,3 +1,8 @@
+### 1.1.1 - 2018-11-29
+Tested with Parkitect *1.0*
+* Compile with new Parkitect version
+* Copy preview.png after build
+
 ### 1.1.0 - 2018-11-28
 Tested with Parkitect *Beta 12*
 * Fix [#1](https://github.com/Craxy/Parkitect-Currencies/pull/1)
