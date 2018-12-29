@@ -36,11 +36,11 @@ namespace Craxy.Parkitect.Currencies
       using (Layout.Vertical())
       {
         DrawSettings();
-        GUILayout.Space(20.0f);
+        GUILayout.Space(15.0f);
         DrawPresets();
-        GUILayout.Space(20.0f);
+        GUILayout.Space(15.0f);
         DrawExamples();
-        GUILayout.Space(20.0f);
+        GUILayout.Space(15.0f);
       }
     }
 
@@ -55,7 +55,7 @@ namespace Craxy.Parkitect.Currencies
     private string _notIncluded = "";
     private void UpdateSymbol(string symbol)
     {
-      if(symbol != Settings.Symbol.Value)
+      if (symbol != Settings.Symbol.Value)
       {
         Settings.Symbol.Value = symbol;
         UpdateNotIncludedDisplay();
@@ -76,9 +76,9 @@ namespace Craxy.Parkitect.Currencies
         UpdateSymbol(symbol);
         GUILayout.FlexibleSpace();
       }
-      if(_notIncluded.Length > 0)
+      if (_notIncluded.Length > 0)
       {
-        using(Layout.Horizontal())
+        using (Layout.Horizontal())
         {
           GUILayout.Space(50.0f);
           GUILayout.Label($"Character(s) {_notIncluded} are not available ingame and will be displayed as ☐.", _smallText);
@@ -97,6 +97,8 @@ namespace Craxy.Parkitect.Currencies
       DrawPositiveNumberFormat();
       GUILayout.Space(-10.0f);
       DrawNegativeNumberFormat();
+      GUILayout.Space(-10.0f);
+      DrawSeparatorsFormat();
     }
     private void DrawPositiveNumberFormat()
     {
@@ -120,7 +122,7 @@ namespace Craxy.Parkitect.Currencies
         foreach (var v in possibleValues)
         {
           Settings.PositivePattern.Value = v;
-          if (GUILayout.Toggle(v == current, " " + value.ToString("C", Settings.NumberFormat)))
+          if (GUILayout.Toggle(v == current, " " + value.ToString("C", Settings.ActiveNumberFormat)))
           {
             if (v != current)
             {
@@ -154,7 +156,7 @@ namespace Craxy.Parkitect.Currencies
         foreach (var v in possibleValues)
         {
           Settings.NegativePattern.Value = v;
-          if (GUILayout.Toggle(v == current, " " + value.ToString("C", Settings.NumberFormat)))
+          if (GUILayout.Toggle(v == current, " " + value.ToString("C", Settings.ActiveNumberFormat)))
           {
             if (v != current)
             {
@@ -166,14 +168,52 @@ namespace Craxy.Parkitect.Currencies
         if (!possibleValues.Contains(current))
         {
           Settings.NegativePattern.Value = current;
-          GUILayout.Toggle(true, " " + value.ToString("C", Settings.NumberFormat));
+          GUILayout.Toggle(true, " " + value.ToString("C", Settings.ActiveNumberFormat));
         }
 
         GUILayout.FlexibleSpace();
       }
       Settings.NegativePattern.Value = selected;
     }
+    private void DrawSeparatorsFormat()
+    {
+      using (Layout.Horizontal())
+      {
+        GUILayout.Space(30.0f);
+        Settings.UseCustomSeparators.Value = GUILayout.Toggle(Settings.UseCustomSeparators.Value, " custom separators");
+        GUILayout.FlexibleSpace();
+      }
+      GUILayout.Space(-15.0f);
 
+      GUI.enabled = Settings.UseCustomSeparators.Value;
+      using (Layout.Horizontal())
+      {
+        GUILayout.Space(60.0f);
+        {
+          GUILayout.Label("decimal:");
+          GUILayout.Space(5.0f);
+          var preSeperator = Settings.DecimalSeparator.Value;
+          var separator = GUILayout.TextField(preSeperator, 3, _textField, GUILayout.Width(60.0f));
+          if (preSeperator != separator)
+          {
+            Settings.DecimalSeparator.Value = separator;
+          }
+        }
+        GUILayout.FlexibleSpace();
+        {
+          GUILayout.Label("group:");
+          GUILayout.Space(5.0f);
+          var preSeperator = Settings.GroupSeparator.Value;
+          var separator = GUILayout.TextField(preSeperator, 3, _textField, GUILayout.Width(60.0f));
+          if (preSeperator != separator)
+          {
+            Settings.GroupSeparator.Value = separator;
+          }
+        }
+        GUILayout.FlexibleSpace();
+      }
+      GUI.enabled = true;
+    }
 
     private NumberFormatInfo FromNumberFormat(NumberFormatInfo value)
     {
@@ -182,6 +222,8 @@ namespace Craxy.Parkitect.Currencies
       nf.CurrencySymbol = value.CurrencySymbol;
       nf.CurrencyPositivePattern = value.CurrencyPositivePattern;
       nf.CurrencyNegativePattern = value.CurrencyNegativePattern;
+      nf.CurrencyDecimalSeparator = value.CurrencyDecimalSeparator;
+      nf.CurrencyGroupSeparator = value.CurrencyGroupSeparator;
 
       return nf;
     }
@@ -203,9 +245,11 @@ namespace Craxy.Parkitect.Currencies
     {
       var nf = Settings.NumberFormat;
 
-      nf.CurrencySymbol = ReplaceCharsIfNecessary(value.CurrencySymbol);
-      nf.CurrencyPositivePattern = value.CurrencyPositivePattern;
-      nf.CurrencyNegativePattern = value.CurrencyNegativePattern;
+      Settings.Symbol.Value = ReplaceCharsIfNecessary(value.CurrencySymbol);
+      Settings.PositivePattern.Value = value.CurrencyPositivePattern;
+      Settings.NegativePattern.Value = value.CurrencyNegativePattern;
+      Settings.DecimalSeparator.Value = value.CurrencyDecimalSeparator;
+      Settings.GroupSeparator.Value = value.CurrencyGroupSeparator;
 
       UpdateNotIncludedDisplay();
     }
@@ -307,9 +351,9 @@ namespace Craxy.Parkitect.Currencies
         using (Layout.Horizontal())
         {
           GUILayout.Space(60.0f);
-          GUILayout.Label(string.Format("<size=13>{0}</size>", example.ToString("C", Settings.NumberFormat)), GUILayout.Width(200.0f));
+          GUILayout.Label(string.Format("<size=13>{0}</size>", example.ToString("C", Settings.ActiveNumberFormat)), GUILayout.Width(200.0f));
           GUILayout.Space(30.0f);
-          GUILayout.Label(string.Format("<size=13>{0}</size>", (-example).ToString("C", Settings.NumberFormat)));
+          GUILayout.Label(string.Format("<size=13>{0}</size>", (-example).ToString("C", Settings.ActiveNumberFormat)));
           GUILayout.FlexibleSpace();
         }
         GUILayout.Space(-15.0f);

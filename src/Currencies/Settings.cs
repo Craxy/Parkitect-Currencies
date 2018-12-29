@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MiniJSON;
 using System.IO;
+using static UnityEngine.Debug;
 
 namespace Craxy.Parkitect.Currencies
 {
@@ -31,6 +32,13 @@ namespace Craxy.Parkitect.Currencies
       return new ValidationResult(false, message);
     }
   }
+
+  // interface IEntry<T>
+  // {
+  //   string Name { get; }
+  //   T DefaultValue { get; }
+  //   T Value { get; set; }
+  // }
 
   sealed class Entry<T>
   {
@@ -75,7 +83,7 @@ namespace Craxy.Parkitect.Currencies
       }
       set
       {
-        if (Object.Equals(value, Value))
+        if (EqualityComparer<T>.Default.Equals(value, Value))
         {
           return;
         }
@@ -134,40 +142,42 @@ namespace Craxy.Parkitect.Currencies
   {
     #region Number Format
     private static NumberFormatInfo _defaultNumberFormat = GameController.currencyFormat;
-    public static NumberFormatInfo DefaultNumberFormat
-    {
-      get
-      {
-        return _defaultNumberFormat;
-      }
-    }
-
+    public static NumberFormatInfo DefaultNumberFormat => _defaultNumberFormat;
     private NumberFormatInfo _numberFormat = (NumberFormatInfo)DefaultNumberFormat.Clone();
-    public NumberFormatInfo NumberFormat
-    {
-      get
-      {
-        return _numberFormat;
-      }
-    }
+    public NumberFormatInfo NumberFormat => _numberFormat;
+
+    private NumberFormatInfo _numberFormatWithSeparators = (NumberFormatInfo)DefaultNumberFormat.Clone();
+    public NumberFormatInfo NumberFormatWithSeparators => _numberFormatWithSeparators;
+    public NumberFormatInfo ActiveNumberFormat => UseCustomSeparators.Value ? NumberFormatWithSeparators : NumberFormat;
     #endregion
 
     #region helper
+    private static Func<T, ValidationResult> AlwaysValid<T>()
+      => (value) => ValidationResult.OK();
     private static Func<T, ValidationResult> Validate<T>(Func<T, bool> validator, string errorMessage)
-    {
-      return (value) => validator(value) ? ValidationResult.OK() : ValidationResult.Error(errorMessage);
-    }
+      => (value) => validator(value) ? ValidationResult.OK() : ValidationResult.Error(errorMessage);
     private static Func<int, bool> Between(int min, int max)
-    {
-      return (value) => min <= value && value <= max;
-    }
+      => (value) => min <= value && value <= max;
     private static Func<string, bool> LengthBetween(int min, int max)
-    {
-      return (value) => min <= value.Length && value.Length <= max;
-    }
+      => (value) => min <= value.Length && value.Length <= max;
     #endregion
 
     #region Symbol
+    private string symbol
+    {
+      get
+      {
+        Assert(NumberFormat.CurrencySymbol == _numberFormatWithSeparators.CurrencySymbol);
+        return NumberFormat.CurrencySymbol;
+      }
+      set
+      {
+        Assert(NumberFormat.CurrencySymbol == _numberFormatWithSeparators.CurrencySymbol);
+        NumberFormat.CurrencySymbol = value;
+        NumberFormatWithSeparators.CurrencySymbol = value;
+        Assert(NumberFormat.CurrencySymbol == _numberFormatWithSeparators.CurrencySymbol);
+      }
+    }
     private Entry<string> _symbol;
     public Entry<string> Symbol
     {
@@ -176,13 +186,104 @@ namespace Craxy.Parkitect.Currencies
         if (_symbol == null)
         {
           _symbol = new Entry<string>("Symbol",
-                                      () => NumberFormat.CurrencySymbol,
-                                      (value) => NumberFormat.CurrencySymbol = value,
+                                      () => symbol,
+                                      (value) => symbol = value,
                                       Validate(LengthBetween(0, 3), "Symbol must be between 0 and 3 characters."),
                                       () => DefaultNumberFormat.CurrencySymbol
                                     );
         }
         return _symbol;
+      }
+    }
+    #endregion
+    #region PositivePattern
+    private int positivePattern
+    {
+      get
+      {
+        Assert(NumberFormat.CurrencyPositivePattern == _numberFormatWithSeparators.CurrencyPositivePattern);
+        return NumberFormat.CurrencyPositivePattern;
+      }
+      set
+      {
+        Assert(NumberFormat.CurrencyPositivePattern == _numberFormatWithSeparators.CurrencyPositivePattern);
+        NumberFormat.CurrencyPositivePattern = value;
+        NumberFormatWithSeparators.CurrencyPositivePattern = value;
+        Assert(NumberFormat.CurrencyPositivePattern == _numberFormatWithSeparators.CurrencyPositivePattern);
+      }
+    }
+    private Entry<int> _positivePattern;
+    public Entry<int> PositivePattern
+    {
+      get
+      {
+        if (_positivePattern == null)
+        {
+          _positivePattern = new Entry<int>("PositivePattern",
+                                      () => positivePattern,
+                                      (value) => positivePattern = value,
+                                      Validate(Between(0, 3), "Positive pattern must be between 0 and 3."),
+                                      () => DefaultNumberFormat.CurrencyPositivePattern
+                                    );
+        }
+        return _positivePattern;
+      }
+    }
+    #endregion
+    #region NegativePattern
+    private int negativePattern
+    {
+      get
+      {
+        Assert(NumberFormat.CurrencyNegativePattern == _numberFormatWithSeparators.CurrencyNegativePattern);
+        return NumberFormat.CurrencyNegativePattern;
+      }
+      set
+      {
+        Assert(NumberFormat.CurrencyNegativePattern == _numberFormatWithSeparators.CurrencyNegativePattern);
+        NumberFormat.CurrencyNegativePattern = value;
+        NumberFormatWithSeparators.CurrencyNegativePattern = value;
+        Assert(NumberFormat.CurrencyNegativePattern == _numberFormatWithSeparators.CurrencyNegativePattern);
+      }
+    }
+    private Entry<int> _negativePattern;
+    public Entry<int> NegativePattern
+    {
+      get
+      {
+        if (_negativePattern == null)
+        {
+          _negativePattern = new Entry<int>("NegativePattern",
+                                      () => negativePattern,
+                                      (value) => negativePattern = value,
+                                      Validate(Between(0, 15), "Negative pattern must be between 0 and 15."),
+                                      () => DefaultNumberFormat.CurrencyNegativePattern
+                                    );
+        }
+        return _negativePattern;
+      }
+    }
+    #endregion
+
+    #region Custom Separators
+
+    #region UseCustomSeparators
+    private bool _customSeparators = false;
+    private Entry<bool> _useCustomSeparators;
+    public Entry<bool> UseCustomSeparators
+    {
+      get
+      {
+        if (_useCustomSeparators == null)
+        {
+          _useCustomSeparators = new Entry<bool>("UseCustomSeparators",
+                                      () => _customSeparators,
+                                      (value) => _customSeparators = value,
+                                      AlwaysValid<bool>(),
+                                      () => false
+                                    );
+        }
+        return _useCustomSeparators;
       }
     }
     #endregion
@@ -195,8 +296,8 @@ namespace Craxy.Parkitect.Currencies
         if (_decimalSeparator == null)
         {
           _decimalSeparator = new Entry<string>("DecimalSeparator",
-                                      () => NumberFormat.CurrencyDecimalSeparator,
-                                      (value) => NumberFormat.CurrencyDecimalSeparator = value,
+                                      () => NumberFormatWithSeparators.CurrencyDecimalSeparator,
+                                      (value) => NumberFormatWithSeparators.CurrencyDecimalSeparator = value,
                                       Validate(LengthBetween(0, 3), "Decimal separator must be between 1 and 3 characters."),
                                       () => DefaultNumberFormat.CurrencyDecimalSeparator
                                     );
@@ -214,8 +315,8 @@ namespace Craxy.Parkitect.Currencies
         if (_groupSeparator == null)
         {
           _groupSeparator = new Entry<string>("GroupSeparator",
-                                      () => NumberFormat.CurrencyGroupSeparator,
-                                      (value) => NumberFormat.CurrencyGroupSeparator = value,
+                                      () => NumberFormatWithSeparators.CurrencyGroupSeparator,
+                                      (value) => NumberFormatWithSeparators.CurrencyGroupSeparator = value,
                                       Validate(LengthBetween(0, 3), "Group separator must be between 0 and 3 characters."),
                                       () => DefaultNumberFormat.CurrencyGroupSeparator
                                     );
@@ -224,54 +325,18 @@ namespace Craxy.Parkitect.Currencies
       }
     }
     #endregion
-    #region PositivePattern
-    private Entry<int> _positivePattern;
-    public Entry<int> PositivePattern
-    {
-      get
-      {
-        if (_positivePattern == null)
-        {
-          _positivePattern = new Entry<int>("PositivePattern",
-                                      () => NumberFormat.CurrencyPositivePattern,
-                                      (value) => NumberFormat.CurrencyPositivePattern = value,
-                                      Validate(Between(0, 3), "Positive pattern must be between 0 and 3."),
-                                      () => DefaultNumberFormat.CurrencyPositivePattern
-                                    );
-        }
-        return _positivePattern;
-      }
-    }
-    #endregion
-    #region NegativePattern
-    private Entry<int> _negativePattern;
-    public Entry<int> NegativePattern
-    {
-      get
-      {
-        if (_negativePattern == null)
-        {
-          _negativePattern = new Entry<int>("NegativePattern",
-                                      () => NumberFormat.CurrencyNegativePattern,
-                                      (value) => NumberFormat.CurrencyNegativePattern = value,
-                                      Validate(Between(0, 15), "Negative pattern must be between 0 and 15."),
-                                      () => DefaultNumberFormat.CurrencyNegativePattern
-                                    );
-        }
-        return _negativePattern;
-      }
-    }
-    #endregion
+    #endregion Custom Separator
 
     #region Serialize
     public string ToJson()
     {
       var dict = new Dictionary<string, object>();
       Symbol.SaveToDictionary(dict);
-      DecimalSeparator.SaveToDictionary(dict);
-      GroupSeparator.SaveToDictionary(dict);
       PositivePattern.SaveToDictionary(dict);
       NegativePattern.SaveToDictionary(dict);
+      UseCustomSeparators.SaveToDictionary(dict);
+      DecimalSeparator.SaveToDictionary(dict);
+      GroupSeparator.SaveToDictionary(dict);
 
       return Json.Serialize(dict);
     }
@@ -282,10 +347,11 @@ namespace Craxy.Parkitect.Currencies
       return new[]
         {
           Symbol.LoadFromDictionary(dict),
-          DecimalSeparator.LoadFromDictionary(dict),
-          GroupSeparator.LoadFromDictionary(dict),
           PositivePattern.LoadFromDictionary(dict),
           NegativePattern.LoadFromDictionary(dict),
+          UseCustomSeparators.LoadFromDictionary(dict),
+          DecimalSeparator.LoadFromDictionary(dict),
+          GroupSeparator.LoadFromDictionary(dict),
         }
         .Where(vr => vr.IsError())
         .Select(vr => vr.Message)
@@ -299,7 +365,7 @@ namespace Craxy.Parkitect.Currencies
     {
       var settings = new Settings();
 
-      if(File.Exists(path))
+      if (File.Exists(path))
       {
         try
         {

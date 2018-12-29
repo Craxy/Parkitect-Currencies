@@ -100,7 +100,7 @@ namespace Craxy.Parkitect.Currencies
       }
 
       // change string.Format
-      GameController.currencyFormat = Settings.NumberFormat;
+      GameController.currencyFormat = Settings.ActiveNumberFormat;
       // change input fields
       if(_inputFieldInjector == null)
       {
