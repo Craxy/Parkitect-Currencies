@@ -10,7 +10,7 @@
     <!-- Used as identifier in parkitect (-> IMod.Identifier) -->
     <Identifier>Craxy@Currencies</Identifier>
     <!-- Version of this mod. Used as AssemblyVersion and FileVersion-->
-    <Version>1.1.1</Version>
+    <Version>1.2.0</Version>
     <!-- Used as name in parkitect(-> IMod.Name) and as AssemblyTitle and AssemblyProduct-->
     <Name>Currencies</Name>
     <!-- Used as description in parkitect (-> IMod.Description) and as AssemblyDescription -->

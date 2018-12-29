@@ -1,3 +1,8 @@
+### 1.2.0 0 2018-12-29
+Tested with Parkitect *1.2a*
+* Compile with new Parkitect version
+* Add decimal & group separator (only readonly currencies, neither input fields nor other numbers like speed or height)
+
 ### 1.1.1 - 2018-11-29
 Tested with Parkitect *1.0*
 * Compile with new Parkitect version
