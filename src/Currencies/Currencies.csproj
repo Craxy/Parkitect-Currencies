@@ -35,7 +35,7 @@
 
   <PropertyGroup>
     <!-- Different on each system -->
-    <ParkitectPath>E:\Downloads\games\Humble Bundle\games\Parkitect\Parkitect_1.0_64bit</ParkitectPath>
+    <ParkitectPath>E:\Downloads\games\Humble Bundle\games\Parkitect\Parkitect_Version_1.2a_64bit</ParkitectPath>
     <ParkitectUserPath>E:\Documents\Parkitect</ParkitectUserPath>
     <SteamExe>D:\Games\Steam\Steam.exe</SteamExe>
   </PropertyGroup>
