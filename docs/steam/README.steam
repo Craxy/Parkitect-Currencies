@@ -27,6 +27,11 @@ The injected symbols use a different font ([url=https://fonts.google.com/specime
 The Symbol can either be positioned before or after the number. Additional there might be an additional space between the currency symbol and the value. The possible representations are: € 123.12, €123.12, 123.12€, 123.12 €  
 For negative values there are even more possible positions because of the negative sign: 
 -€ 123.12, € -123.12, €-123.12, -€123.12, -123.12€, -123.12 €  
+
+[h1]Separators[/h1]
+Different countries use different decimal and group separators. For example: US: 12,345.67, DE: 12.345,67. Parkitect uses the US style for all numbers.
+This mod can change the representation for currencies -- ONLY currencies, other types (like speed or height) aren't changed. Neither are price input fields affected.
+These limitations result in a quite quirky experience: some numbers are in one style while others use another style. And for input fields you have to remember to use the original (US) style. Because of these issues no custom separators are used unless you enable them separately.
 [/quote]
 
 [quote]
@@ -44,9 +49,6 @@ For negative values there are even more possible positions because of the negati
 [h1]Release notes[/h1]
 Listed in [url=https://github.com/Craxy/Parkitect-Currencies/RELEASE_NOTES.md]on GitHub[/url] and on the [url=https://github.com/Craxy/Parkitect-Currencies/releases]GitHub release page[/url].  
 A simplified changelog can also be found [url=https://steamcommunity.com/sharedfiles/filedetails/changelog/1576312321]on the Change Notes page on the Steam Workshop page[/url] for this mod.
-
-Latest version: [i]1.1.0[/i]
-Tested with Parkitect [i]Beta 12[/i]
 [/quote]
 [quote]
 [h1]Issues[/h1]

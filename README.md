@@ -8,7 +8,7 @@ Change the currency symbol.
 
 Parkitect displays money as Dollars marked by *$*. With this mod you can change the symbol to other representations like *€* or *£*.  
 
-Besides just exchanging the symbol, you can also control where to put it to match a regional preference: While the default US-dollar style is *$123.12*, the German preference (with Euro) is *123.12 €* <a name="star1-source"></a>[*](#star1).  
+Besides just exchanging the symbol, you can also control where to put it to match a regional preference: While the default US-dollar style is *$123.12*, the German preference (with Euro) is *123.12 €*.  
 ![settings](./docs/files/img/ExampleEuro.png)
 
 ## Installation
@@ -39,6 +39,10 @@ The Symbol can either be positioned before or after the number. Additional there
 For negative values there are even more possible positions because of the negative sign: 
 -€ 123.12, € -123.12, €-123.12, -€123.12, -123.12€, -123.12 €  
 
+### Separators
+Different countries use different decimal and group separators. For example: US: `12,345.67`, DE: `12.345,67`.  Parkitect uses the US style for all numbers.  
+This mod can change the representation for currencies -- ONLY currencies, other types (like speed or height) aren't changed. Neither are price input fields affected.  
+These limitations result in a quite quirky experience: some numbers are in one style while others use another style. And for input fields you have to remember to use the original (US) style. Because of these issues no custom separators are used unless you enable them separately.
 
 <br></br>
 **Note**: The change is purely cosmetic: $123.12 = 123.12 € = £123.12 = ¥123.12 = R 123.12 -- there's no currency conversion.
@@ -54,10 +58,6 @@ For negative values there are even more possible positions because of the negati
 Listed in [RELEASE_NOTES.md](./RELEASE_NOTES.md) and on the [release page](https://github.com/Craxy/Parkitect-Currencies/releases).  
 A simplified changelog can also be found [on the Change Notes page on the Steam Workshop page](https://steamcommunity.com/sharedfiles/filedetails/changelog/1576312321) for this mod.
 
-Latest version: *1.1.0*  
-Tested with Parkitect *Beta 12*
-
-
 ### Issues
 Please report issues via the [issue tracker on GitHub](https://github.com/Craxy/Parkitect-Currencies/issues).  
 If this mod is responsible for a crash or an error/exception please include your *output_log.txt*. Copy this log file immediately after the crash -- its content is cleared for each Parkitect start.  
@@ -69,8 +69,3 @@ If this mod is responsible for a crash or an error/exception please include your
 
 ### Source code
 [Craxy/Parkitect-Currencies on GitHub](https://github.com/Craxy/Parkitect-Currencies)
-
-
-<br></br>
-<br></br>
-<a name="star1"></a>*: There are more differences between the US and DE currency presentation like the decimal separator (*123.12* vs *123,12*). This mod uses always the US version. Although it could be changed for most money displays, there are locations where this isn't possible (in money input fields like changing the fee of a ride). Additionally all other (not currency) number displays would still be in US style. [↩](#star1-source)
