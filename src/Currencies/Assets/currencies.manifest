@@ -1,0 +1,24 @@
+ManifestFileVersion: 0
+CRC: 1161831059
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: f693f918e4404d9cba635772f7f7768e
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 7e33336d37376d3a00386b9e5a0b8198
+HashAppended: 0
+ClassTypes:
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+Assets:
+- Assets/Roboto-Regular SDF.asset
+Dependencies: []

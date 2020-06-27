@@ -1,23 +1,51 @@
-using System.IO;
+using System;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using FontAsset = TMPro.TMP_FontAsset;
 
 namespace Craxy.Parkitect.Currencies.Utils
 {
-  sealed class FontData
+  sealed class AssetBundleInfo
   {
-    // fields are set by JsonUtility.FromJson and not set manually
-    // -> "warning CS0649: Field '...' is never assigned to, and will always have its default value null"
-#pragma warning disable 0649
-    public string Name;
-    public TMP_FontAsset.FontAssetTypes FontAssetTypes;
-    public FaceInfo FontInfo;
-    public KerningTable KerningInfo;
-    public TMP_Glyph[] Glyphs;
-    public FontCreationSetting CreationSettings;
-#pragma warning restore 0649
+    public AssetBundleInfo(LoadFrom type, string path)
+    {
+      Type = type;
+      Path = path;
+    }
+
+    public readonly LoadFrom Type;
+    public readonly string Path;
+
+    public AssetBundle Load() => Type switch
+    {
+      LoadFrom.URL => LoadWWW(Path),
+      LoadFrom.File => LoadFile(Path),// or LoadWWW("file://" + Path);
+      LoadFrom.EmbeddedResource => LoadEmbeddedResource(Path),
+      _ => throw new InvalidOperationException($"Invalid LoadFrom.Type: {Type}"),
+    };
+
+    private static AssetBundle LoadWWW(string path)
+    {
+      using var www = new WWW(path);
+      return www.assetBundle;
+    }
+    private static AssetBundle LoadFile(string path)
+    {
+      return AssetBundle.LoadFromFile(path);
+    }
+    private static AssetBundle LoadEmbeddedResource(string path)
+    {
+      var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+      using var stream = assembly.GetManifestResourceStream(typeof(Mod), path);
+      return AssetBundle.LoadFromStream(stream);
+    }
+
+    public enum LoadFrom
+    {
+      URL,
+      File,
+      EmbeddedResource,
+    }
   }
 
   class SimpleFontInfo
@@ -27,98 +55,66 @@ namespace Craxy.Parkitect.Currencies.Utils
       Name = name;
       Characters = characters;
     }
-    public readonly string Name;
-    public readonly string Characters;
+    public string Name { get; }
+    public string Characters { get; }
 
     public override string ToString()
       => $"{nameof(SimpleFontInfo)}(Name={Name}; Characters={Characters})";
   }
-  sealed class ResourceFontInfo : SimpleFontInfo
+  sealed class FontInfoFromAssetBundle : SimpleFontInfo
   {
-    private ResourceFontInfo(string resourcePath, string name, string characters)
+    public static FontInfoFromAssetBundle Load(AssetBundleInfo assetBundle, string nameInAssetBundle)
+    {
+      var bundle = assetBundle.Load();
+      try
+      {
+        var font = bundle.LoadAsset<FontAsset>(nameInAssetBundle);
+        var name = font.name;
+        var chars = font.characterTable.Select(c => (char)c.unicode).ToArray();
+        var characters = new String(chars);
+
+        return new FontInfoFromAssetBundle(name, characters, nameInAssetBundle);
+      }
+      finally
+      {
+        bundle.Unload(unloadAllLoadedObjects: true);
+      }
+    }
+
+    public FontInfoFromAssetBundle(string name, string characters, string nameInAssetBundle)
       : base(name, characters)
     {
-      ResourcePath = resourcePath;
+      NameInAssetBundle = nameInAssetBundle;
     }
+    public string NameInAssetBundle { get; }
 
-    public static ResourceFontInfo Create(string resourcePath)
+    public FontAsset LoadFrom(AssetBundle assetBundle)
+      => assetBundle.LoadAsset<FontAsset>(NameInAssetBundle);
+
+    public FontAsset LoadFrom(AssetBundleInfo assetBundleInfo)
     {
-      var infoPath = GetFontInfoResourcePath(resourcePath);
-      var info = ResourceHelper.LoadString(infoPath).Split('\n');
-
-      return new ResourceFontInfo(resourcePath, info[0], info[1]);
-    }
-
-    public readonly string ResourcePath;
-    public override string ToString()
-      => $"{nameof(ResourceFontInfo)}(Name={Name}; Characters={Characters}; ResourcePath={ResourcePath})";
-
-    private static string CreateResourcePath(string resourcePath, string fileType)
-      => $"{resourcePath}.{fileType}";
-    private static string GetFontInfoResourcePath(string resourcePath)
-      => CreateResourcePath(resourcePath, "txt");
-    private string GetResourcePath(string fileType) => CreateResourcePath(ResourcePath, fileType);
-    private string FontInfoResourcePath => GetFontInfoResourcePath(ResourcePath);
-    private string FontDataResourcePath => GetResourcePath("json");
-    private string FontAtlasResourcePath => GetResourcePath("png");
-
-    public FontAsset LoadFont()
-    {
-      var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-      FontData LoadFontData()
+      var assetBundle = assetBundleInfo.Load();
+      try
       {
-        using (var aStream = assembly.GetManifestResourceStream(typeof(Mod), FontDataResourcePath))
-        using (var stream = new StreamReader(aStream))
-        {
-          var json = stream.ReadToEnd();
-          return JsonUtility.FromJson<FontData>(json);
-        }
+        return LoadFrom(assetBundle);
       }
-      Texture2D LoadAtlas()
+      finally
       {
-        using (var stream = assembly.GetManifestResourceStream(typeof(Mod), FontAtlasResourcePath))
-        {
-          var buf = new byte[stream.Length];
-          stream.Read(buf, 0, buf.Length);
-
-          var atlas = new Texture2D(1, 1, TextureFormat.Alpha8, false, true);
-          atlas.LoadImage(buf, true);
-
-          return atlas;
-        }
+        assetBundle.Unload(unloadAllLoadedObjects: false);
       }
-
-      var data = LoadFontData();
-      var font = ScriptableObject.CreateInstance<FontAsset>();
-      font.name = data.Name;
-      font.fontCreationSettings = data.CreationSettings;
-      font.AddFaceInfo(data.FontInfo);
-      font.AddKerningInfo(data.KerningInfo);
-      font.AddGlyphInfo(data.Glyphs);
-      font.atlas = LoadAtlas();
-
-      // use material from default font
-      var sourceFont = FontHelper.DefaultGameFont;
-      var material = new Material(sourceFont.material);
-      material.SetTexture(ShaderUtilities.ID_MainTex, font.atlas);
-      font.material = material;
-
-      font.ReadFontDefinition();
-
-      return font;
     }
   }
 
   static class SimpleFontInfoExtensions
   {
-    public static bool Contains(this SimpleFontInfo info, char c)
+    public static bool Contains<T>(this T info, char c) where T : SimpleFontInfo
       => info.Characters.Contains(c);
-    public static bool IsFallbackFor(this SimpleFontInfo info, FontAsset font)
-      => font.fallbackFontAssets.Any(f => f.name == info.Name);
-    public static bool IsFallbackForDefaultGameFont(this SimpleFontInfo info)
+    public static bool IsFallbackFor<T>(this T info, FontAsset font) where T : SimpleFontInfo
+      => font.fallbackFontAssetTable.Any(f => f.name == info.Name);
+    public static bool IsFallbackForDefaultGameFont<T>(this T info) where T : SimpleFontInfo
       => info.IsFallbackFor(FontHelper.DefaultGameFont);
 
-    public static bool IsInButNotInDefaultGameFont(this SimpleFontInfo info, char c)
+    public static bool IsInInfoButNotInDefaultGameFont<T>(this T info, char c) where T : SimpleFontInfo
     {
       var font = FontHelper.DefaultGameFont;
       if (font.HasCharacter(c, searchFallbacks: false))
@@ -127,58 +123,56 @@ namespace Craxy.Parkitect.Currencies.Utils
       }
       else
       {
-        foreach (var fallback in font.fallbackFontAssets)
+        foreach (var fallback in font.fallbackFontAssetTable)
         {
           if (fallback.name == info.Name)
           {
             continue;
           }
-
           if (fallback.HasCharacter(c, searchFallbacks: true))
           {
-            return false;
+            return true;
           }
         }
-
-        return info.Contains(c);
       }
-    }
 
-    public static bool IsInButNotInDefaultGameFont(this SimpleFontInfo info, string s)
-      => s.All(info.IsInButNotInDefaultGameFont);
+      return info.Contains(c);
+    }
+    public static bool IsInInfoButNotInDefaultGameFont<T>(this T info, string s) where T : SimpleFontInfo
+      => s.All(info.IsInInfoButNotInDefaultGameFont);
 
     public static bool IsFallbackFor(this FontAsset info, FontAsset font)
-      => font.fallbackFontAssets.Contains(info);
-
+      => font.fallbackFontAssetTable.Contains(info);
     public static void InjectInto(this FontAsset font, FontAsset into)
     {
-      if(font.IsFallbackFor(into))
+      if (font.IsFallbackFor(into))
       {
         // already injected
         return;
       }
-      into.fallbackFontAssets.Add(font);
+      into.fallbackFontAssetTable.Add(font);
     }
     public static void InjectIntoDefaultGameFont(this FontAsset font)
       => font.InjectInto(FontHelper.DefaultGameFont);
-    public static void EjectFrom(this SimpleFontInfo font, FontAsset from)
+
+    public static void EjectFrom<T>(this T font, FontAsset from) where T : SimpleFontInfo
     {
-      var idx = from.fallbackFontAssets.FindIndex(f => f.name == font.Name);
-      if(idx < 0)
+      var idx = from.fallbackFontAssetTable.FindIndex(f => f.name == font.Name);
+      if (idx < 0)
       {
         // not injected
         return;
       }
-      from.fallbackFontAssets.RemoveAt(idx);
+      from.fallbackFontAssetTable.RemoveAt(idx);
     }
-    public static void EjectFromDefaultGameFont(this SimpleFontInfo font)
+    public static void EjectFromDefaultGameFont<T>(this T font) where T : SimpleFontInfo
       => font.EjectFrom(FontHelper.DefaultGameFont);
+
     public static void EjectFrom(this FontAsset font, FontAsset from)
-      => from.fallbackFontAssets.Remove(font);
+      => from.fallbackFontAssetTable.Remove(font);
     public static void EjectFromDefaultGameFont(this FontAsset font)
       => font.EjectFrom(FontHelper.DefaultGameFont);
   }
-
   static class FontHelper
   {
     public static readonly string DefaultGameFontName = "museosans_500 SDF";
@@ -201,11 +195,12 @@ namespace Craxy.Parkitect.Currencies.Utils
       => IsInFont(c, DefaultGameFont, includeFallbacks: true);
     public static bool IsInCustomFont(char c, string customFontChars)
       => customFontChars.Contains(c);
-    public static bool IsInCustomFont(char c, SimpleFontInfo customFont)
+    public static bool IsInCustomFont<T>(char c, T customFont) where T : SimpleFontInfo
       => customFont.Characters.Contains(c);
     public static bool IsInGameOrCustomFont(char c, string customFontChars)
       => IsInGameFont(c) || IsInCustomFont(c, customFontChars);
-    public static bool IsInGameOrCustomFont(char c, SimpleFontInfo customFont)
+    public static bool IsInGameOrCustomFont<T>(char c, T customFont) where T : SimpleFontInfo
       => IsInGameOrCustomFont(c, customFont.Characters);
+
   }
 }

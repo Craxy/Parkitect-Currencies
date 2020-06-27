@@ -43,9 +43,8 @@ namespace Craxy.Parkitect.Currencies
         GUILayout.Space(15.0f);
       }
     }
-
     private static GUISkin Skin => ScriptableSingleton<UIAssetManager>.Instance.guiSkin;
-    private GUIStyle _textField, _smallText;
+    private readonly GUIStyle _textField, _smallText;
     private void DrawSettings()
     {
       DrawSymbol();
@@ -93,7 +92,7 @@ namespace Craxy.Parkitect.Currencies
         GUILayout.Label("Symbol Position:");
         GUILayout.FlexibleSpace();
       }
-      GUILayout.Space(-10.0f);
+      GUILayout.Space(-15.0f);
       DrawPositiveNumberFormat();
       GUILayout.Space(-10.0f);
       DrawNegativeNumberFormat();
@@ -230,7 +229,7 @@ namespace Craxy.Parkitect.Currencies
     //issue: sometimes a currency has multiple symbols -- and one is used in roboto (font) and the other in CultureInfo
     //         for example yen has U+00A5 ¥ YEN SIGN, U+FFE5 ￥ FULLWIDTH YEN SIGN
     //          roboto uses YEN SIGN, but CultureInfo returns FULLWIDTH YEN SIGN
-    private static Dictionary<char, char> ReplacementChars = new Dictionary<char, char>() {
+    private static readonly Dictionary<char, char> ReplacementChars = new Dictionary<char, char>() {
       { (char)0xFFE5, (char)0x00A5 } // U+FFE5 ￥ Fullwidth Yen sign -> U+00A5 ¥ Yen sign
     };
     private static char ReplaceCharIfNecessary(char c)
@@ -279,7 +278,7 @@ namespace Craxy.Parkitect.Currencies
       return CreatePreset(cultureName, "");
     }
     private Preset[] _presets = null;
-    private void InitalizePresets()
+    private void InitializePresets()
     {
       var usDefault = CreatePreset("en-US", "default");
       usDefault.Culture.NumberFormat.CurrencyNegativePattern = 1;
@@ -302,7 +301,7 @@ namespace Craxy.Parkitect.Currencies
     {
       if (_presets == null)
       {
-        InitalizePresets();
+        InitializePresets();
       }
 
       GUILayout.Label("Presets:");
@@ -340,7 +339,7 @@ namespace Craxy.Parkitect.Currencies
       }
     }
 
-    private static float[] _examples = new float[] { 0.00f, 2.50f, 19.99f, 123.45f, 2500.85f, 50000.00f, 12345567890.1233456789f, };
+    private static readonly float[] _examples = new float[] { 0.00f, 2.50f, 19.99f, 123.45f, 2500.85f, 50000.00f, 12345567890.1233456789f, };
     private void DrawExamples()
     {
       GUILayout.Label("Examples:");
@@ -359,5 +358,45 @@ namespace Craxy.Parkitect.Currencies
         GUILayout.Space(-15.0f);
       }
     }
+
+#if DEBUG
+    private readonly List<TMPro.TMP_FontAsset> fontBuffer = new List<TMPro.TMP_FontAsset>(7);
+    private readonly StringBuilder sb = new StringBuilder();
+    private void DrawFontOfSymbol()
+    {
+      foreach (var c in Settings.Symbol.Value)
+      {
+        foreach (var f in Resources.FindObjectsOfTypeAll<TMPro.TMP_FontAsset>())
+        {
+          if (f.HasCharacter(c, searchFallbacks: false))
+          {
+            fontBuffer.Add(f);
+          }
+        }
+
+        sb.Append(c).Append(" found ").Append(fontBuffer.Count).Append(" times: ");
+        if (fontBuffer.Count > 0)
+        {
+          var first = true;
+          foreach (var font in fontBuffer)
+          {
+            if (first)
+            {
+              first = false;
+            }
+            else
+            {
+              sb.Append(", ");
+            }
+            sb.Append(font.name);
+          }
+        }
+
+        GUILayout.Label(sb.ToString());
+        sb.Clear();
+        fontBuffer.Clear();
+      }
+    }
+#endif
   }
 }

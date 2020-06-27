@@ -33,13 +33,6 @@ namespace Craxy.Parkitect.Currencies
     }
   }
 
-  // interface IEntry<T>
-  // {
-  //   string Name { get; }
-  //   T DefaultValue { get; }
-  //   T Value { get; set; }
-  // }
-
   sealed class Entry<T>
   {
     // for each settings:

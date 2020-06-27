@@ -1,4 +1,9 @@
-### 1.2.0 0 2018-12-29
+### 1.2.1 - 2020-06-27
+Tested with Parkitect *1.5i*
+* Fix: Custom font doesn't work with current TMPro version
+* Update: Use AssetBundle instead of extra files to import font
+
+### 1.2.0 - 2018-12-29
 Tested with Parkitect *1.2a*
 * Compile with new Parkitect version
 * Add decimal & group separator (only readonly currencies, neither input fields nor other numbers like speed or height)

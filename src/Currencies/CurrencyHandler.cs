@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Craxy.Parkitect.Currencies.Utils;
 using Parkitect.UI;
 using UnityEngine;
@@ -24,17 +23,29 @@ namespace Craxy.Parkitect.Currencies
     }
     private void SaveSettings() => Settings.Save(SettingsFilePath);
 
-    private const string FontName = "Roboto-Regular SDF";
-    private const string FontBaseResourcePath = "Assets.Fonts.Roboto." + FontName;
+    private const string FontInAssetBundle = "Roboto-Regular SDF";
 
-    private ResourceFontInfo _customFontInfo = null;
-    internal ResourceFontInfo CustomFontInfo
+    private AssetBundleInfo _fontAssetBundleInfo = null;
+    internal AssetBundleInfo FontAssetBundleInfo
+    {
+      get
+      {
+        if(_fontAssetBundleInfo == null)
+        {
+          _fontAssetBundleInfo = new AssetBundleInfo(AssetBundleInfo.LoadFrom.EmbeddedResource, "Assets.currencies");
+        }
+        return _fontAssetBundleInfo;
+      }
+    }
+
+    private FontInfoFromAssetBundle _customFontInfo = null;
+    internal FontInfoFromAssetBundle CustomFontInfo
     {
       get
       {
         if(_customFontInfo == null)
         {
-          _customFontInfo = ResourceFontInfo.Create(FontBaseResourcePath);
+          _customFontInfo = FontInfoFromAssetBundle.Load(FontAssetBundleInfo, FontInAssetBundle);
         }
         return _customFontInfo;
       }
@@ -76,21 +87,18 @@ namespace Craxy.Parkitect.Currencies
       var symbol = Settings.Symbol.Value;
       // var injected = CustomFontInfo.IsFallbackForDefaultGameFont();
       var injected = _font != null;
-      var needsInjection = CustomFontInfo.IsInButNotInDefaultGameFont(symbol);
+      var needsInjection = CustomFontInfo.IsInInfoButNotInDefaultGameFont(symbol);
       if(injected && !needsInjection)
       {
         // remove font
         _font.EjectFromDefaultGameFont();
-        //todo: enough to destroy just font?
-        GameObject.Destroy(_font.atlas);
-        GameObject.Destroy(_font.material);
         GameObject.Destroy(_font);
         _font = null;
       }
       else if(!injected && needsInjection)
       {
         // add font
-        _font = CustomFontInfo.LoadFont();
+        _font = CustomFontInfo.LoadFrom(FontAssetBundleInfo);
         _font.InjectIntoDefaultGameFont();
       }
       else
